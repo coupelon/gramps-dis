@@ -4,14 +4,14 @@ En effet, avec la démocratisation des archives départementales en lignes, il est
 Pour la pérennité des recherches effectuées, nombre de généalogistes enregistrent les coordonnées des informations consultées (Type et numéro d'acte, numéro de page...), afin d'être en mesure d'y retourner par la suite. Ces étapes, indispensables pour beaucoup, sont fortement dépendantes de la disponibilité des sites d'archives, dans l'immédiat et sur le long terme.
 Ce plugin permet simplement de conserver une copie, comme la prise de photos en salle d'archive, des documents concernant vos ancêtres.
 
-## Mise en garde
+## Mise en garde et conditions d'utilisation
 L'utilisation d'un tel outil peut être contraire aux conditions d'utilisation des sites d'archives départementales. En tout état de cause, il incombe à chaque utilisateur de prendre connaissance de ces conditions d'utilisation, et de se référer aux archives utilisées en cas de doute. 
 En outre, l'utilisation du plugin n'est pas triviale, car tous les sites ne facilitent pas cette extraction. Il est souvent nécessaire de mettre à jour le plugin pour avoir à sa disposition les derniers algorithmes d'extraction, les sites étant modifiés par leurs auteurs sans préavis.
 
 **Aucune garantie n'est fournie quant au fonctionnement d'une extraction.**
 
 ## Appel à contribution
-Le maintient des algorithmes d'extraction est un travail long étant donné le nombre de sites visés. Toute aide est la bienvenue, ce travail étant plus facilement effectué par les personnes disposant :
+Le maintien des algorithmes d'extraction est un travail long étant donné le nombre de sites visés. Toute aide est la bienvenue, ce travail étant plus facilement effectué par les personnes disposant :
 1. de recherches réelles sur les sites concernés, ce qui permet de balayer tous les types d'actes et de documents, et donc d'obtenir un algorithme le plus générique possible
 2. de connaissance en développement informatique. Ce plugin est développé en Python, langage puissant à la fois adapté aux débutants et aux développeurs expérimentés.
 Pour toute information, contactez moi : olivier [arob@se] coupelon.net
