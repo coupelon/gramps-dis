@@ -336,13 +336,8 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
             offset2 = image.find(".JPG")
             if offset2 == -1:
                 offset2 = image.find(".jpg")
-            offset3 = image[:offset1].rfind("/")
+            offset3 = image[:offset1].rfind("/")            
             
-            #Sign in LOGIN=xxx&PASSWORD=yyy&base=&envoyer.x=110&envoyer.y=4
-            # http://archivesenligne.tarn.fr/login_do.php
-            
-            
-            #TODO: ne fonctionne pas, problablement faute aux headers. voir http://stackoverflow.com/questions/9541677/urllib2-post-request pour une liste de headers
             image_name = self.generate_filename_and_ensure_not_exists(path, image[offset3+1:offset1], int(image[offset2-3:offset2]), "AD81", ".pdf", description)
             if (not image_name[1]):
             

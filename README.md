@@ -78,7 +78,9 @@ Extraction du lien d'un acte : Une fois sur la page à conserver, il faut activer
 ### 81 Tarn
 Site : http://archives.tarn.fr/
 
-Extraction du lien d'un acte : **l'extraction n'est pas encore fonctionnelle, mais en cours de développement.** Il faut tout d'abord s'enregistrer sur le site des archives du tarn, pour obtenir un login et mot de passe qui devront être renseignés au lancement du plugin.
+Extraction du lien d'un acte : Il faut tout d'abord s'enregistrer sur le site des archives du tarn, pour obtenir un login et mot de passe qui devront être renseignés au lancement du plugin. Une fois la pages à conserver trouvée sur le site, il faut activer dans le navigateur web le mode d'analyse réseau. Voir la section 'Analyse réseau'. Ensuite, il faut recharger cette page. Enfin, dans l'analyseur réseau, il faut copier l'adresse débutant par *http://archivesenligne.tarn.fr/affichage.php?image=*.
+
+Note : Le fichier enregistré est pour l'instant au format PDF et non JPG.
 
 ## Analyse réseau
 Le mode analyse réseau permet aux navigateurs web d'exposer les opérations qu'ils effectuent sur le réseau de manière habituellement transparante pour l'utilisateur.
