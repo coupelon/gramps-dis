@@ -338,7 +338,7 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                 offset2 = image.find(".jpg")
             offset3 = image[:offset1].rfind("/")            
             
-            image_name = self.generate_filename_and_ensure_not_exists(path, image[offset3+1:offset1], int(image[offset2-3:offset2]), "AD81", ".pdf", description)
+            image_name = self.generate_filename_and_ensure_not_exists(path, image[offset3+1:offset1], int(image[offset2-3:offset2]), "AD81", ".jpg", description)
             if (not image_name[1]):
             
                 cj = cookielib.CookieJar()
@@ -346,14 +346,18 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                 opener.open("http://archivesenligne.tarn.fr/login.php?base=").read()
                 http_header = {
                     "Content-type": "application/x-www-form-urlencoded",
-                }
-                
+                }                
                 opener.open(urllib2.Request("http://archivesenligne.tarn.fr/login_do.php", "LOGIN="+ ad81_login +"&PASSWORD=" + ad81_password + "&base=&envoyer.x=110&envoyer.y=4", http_header)).read()
                 content = opener.open(o.geturl()).read()
-                file = open(image_name[0],"wb")
-                file.write(content)
-                file.close()
-                return image_name[2], image[offset3+1:offset1], "application/pdf"
+                # Extract the JPG from the PDF
+                stream_offset_start = content.rfind("\nstream\n")
+                stream_offset_end = content.rfind("\nendstream\n")
+                if (stream_offset_start != -1 and stream_offset_end != -1 ):
+                    file = open(image_name[0],"wb")
+                    file.write(content[stream_offset_start+8:stream_offset_end])
+                    file.close()
+                    return image_name[2], image[offset3+1:offset1], "image/jpeg"
+                return "Erreur lors de la recuperation des donnees pour AD81. Verifier le login/mdp."
         else:
             return "Ce format d'url n'est pas supporte pour AD81"
 
