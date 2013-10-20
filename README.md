@@ -1,5 +1,5 @@
-# Présentation
-Ce projet est un plugin pour Gramps qui doit permettre l'extraction et le stockage des pages d'archives correspondant aux ancètres d'un arbre généalogique.
+## Présentation
+Ce projet est un plugin pour Gramps (http://gramps-project.org/) qui doit permettre l'extraction et le stockage des pages d'archives correspondant individus d'un arbre généalogique.
 En effet, avec la démocratisation des archives départementales en lignes, il est commun d'effectuer ses recherches intégralement sur internet.
 Pour la pérennité des recherches effectuées, nombre de généalogistes enregistrent les coordonnées des informations consultées (Type et numéro d'acte, numéro de page...), afin d'être en mesure d'y retourner par la suite. Ces étapes, indispensables pour beaucoup, sont fortement dépendantes de la disponibilité des sites d'archives, dans l'immédiat et sur le long terme.
 Ce plugin permet simplement de conserver une copie, comme la prise de photos en salle d'archive, des documents concernant vos ancêtres.
@@ -8,7 +8,7 @@ Ce plugin permet simplement de conserver une copie, comme la prise de photos en 
 L'utilisation d'un tel outil peut être contraire aux conditions d'utilisation des sites d'archives départementales. En tout état de cause, il incombe à chaque utilisateur de prendre connaissance de ces conditions d'utilisation, et de se référer aux archives utilisées en cas de doute. 
 En outre, l'utilisation du plugin n'est pas triviale, car tous les sites ne facilitent pas cette extraction. Il est souvent nécessaire de mettre à jour le plugin pour avoir à sa disposition les derniers algorithmes d'extraction, les sites étant modifiés par leurs auteurs sans préavis.
 
-**Aucune garantie n'est fournie quand au fonctionnement d'une extraction.**
+**Aucune garantie n'est fournie quant au fonctionnement d'une extraction.**
 
 ## Appel à contribution
 Le maintient des algorithmes d'extraction est un travail long étant donné le nombre de sites visés. Toute aide est la bienvenue, ce travail étant plus facilement effectué par les personnes disposant :
@@ -28,11 +28,15 @@ Pour associer une page d'acte à un individu, il est nécessaire d'enregistrer une
 
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/gramps_saisie_site_internet.png "Saisie d'un site internet pour un individu, correspondant à l'extrait d'acte à conserver")
 
-### Execution de l'extraction
+### Exécution de l'extraction
 Une fois les liens créés pour les individus, il faut exécuter le plugin qui va alors, pour chaque individu :
+
 1. Explorer les liens internet disponibles
+
 2. Vérifier que pour cette personne, ce lien et cette description, qu'un fichier n'existe pas déjà
+
 3. Télécharger l'image de la page
+
 4. Enregistrer cette image dans la galerie de cet indidu.
 
 ## Guide des archives couvertes par le plugin
@@ -40,30 +44,40 @@ La version actuelle (1.0.1 du 20/10/2013) couvre les sites d'archives départemen
 
 ### 12 Aveyron
 Site : http://archives.aveyron.fr
+
 Extraction du lien d'un acte : Une fois sur la page à conserver, il suffit de copier le lien permanent disponible en haut à droite :
+
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/permalien_ligeo.png "Lien permanent AD12")
 
 ### 43 Haute Loire
 Site : http://www.archives43.fr
+
 Note : Les administrateurs du site travaillent à l'ajout d'un lien permanent, ce qui devrait faciliter les opérations.
+
 Extraction du lien d'un acte : Pour trouver le lien permanent d'une page, il faut une fois sur cette dernière cliquer sur le bouton d'impression du site. Une nouvelle fenêtre s'ouvre alors dans la navigateur, il faut copier l'adresse de cette page, généralement située dans la barre d'adresse en haut de l'écran.
 
 ### 48 Lozère
 Site : http://archives.lozere.fr
+
 Extraction du lien d'un acte : Une fois sur la page à conserver, il suffit de copier le lien permanent disponible en haut à droite :
+
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/permalien_ligeo.png "Lien permanent AD48")
 
 ### 63 Puy-de-dôme
 Site : http://www.archivesdepartementales.puydedome.fr
+
 Extraction du lien d'un acte : Une fois sur la page à conserver, il suffit de copier le lien permanent disponible en haut à droite :
+
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/permalien_ligeo.png "Lien permanent AD63")
 
 ### 67 Bas-Rhin
 Site : http://etat-civil.bas-rhin.fr/
+
 Extraction du lien d'un acte : Une fois sur la page à conserver, il faut activer dans le navigateur web le mode d'analyse réseau. Voir la section 'Analyse réseau'. Il faut ensuite cliquer sur Imprimer, une adresse apparait alor dans l'analyseur réseau, il faut copier cette adresse.
 
 ### 81 Tarn
 Site : http://archives.tarn.fr/
+
 Extraction du lien d'un acte : **l'extraction n'est pas encore fonctionnelle, mais en cours de développement.** Il faut tout d'abord s'enregistrer sur le site des archives du tarn, pour obtenir un login et mot de passe qui devront être renseignés au lancement du plugin.
 
 ## Analyse réseau
