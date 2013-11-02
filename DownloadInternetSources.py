@@ -22,9 +22,9 @@
 
 __author__ = "Olivier Coupelon"
 __copyright__ = "Copyright 2013, Olivier Coupelon"
-__credits__ = ["Olivier Coupelon", "Donald N. Allingham", "Brian Matherly"]
+__credits__ = ["Olivier Coupelon", "Donald N. Allingham", "Brian Matherly", "Romjerome"]
 __license__ = "GPL"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __maintainer__ = "Olivier Coupelon"
 __email__ = "olivier@coupelon.net"
 __status__ = "Development"
@@ -59,6 +59,7 @@ import gen.lib
 from gen.db import DbTxn
 import gen.plug.report.utils as ReportUtils
 from gen.display.name import displayer as name_displayer
+import const
 from TransUtils import get_addon_translator
 _ = get_addon_translator(__file__).gettext
   
@@ -163,7 +164,10 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                 
                 for url in person.get_url_list():
                     dir_name = person.get_primary_name().get_regular_name() + "-" + person.get_gramps_id()
-                    path = media_directory + os.sep +  dir_name
+                    if media_directory:
+                        path = media_directory + os.sep +  dir_name
+                    else:
+                        path = const.USER_HOME
                     result = self.determine_cote_from_url(url, path, url.get_description())
                     if result != None and len(result) == 3:
                         # 0: relative_path, 1: title, 2: type
