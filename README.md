@@ -99,9 +99,10 @@ Pour l'activer sous Google Chrome il faut utiliser la combinaison de touches Ctr
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/chrome_copie_lien.png "Analyse des flux réseau sous Chrome")
 
 ### Console JavaScript
-La console javascript permet d'exécuter et de contrôler l'exécution du code JavaScript des sites web. Dans notre cas, nous l'utilisons parfois afin d'extraire des pages web des valeurs qui seront ensuite utilisées par le plugin pour l'extration des actes.
+La console javascript permet d'exécuter et de contrôler l'exécution du code JavaScript des sites web. Dans notre cas, nous l'utilisons parfois afin d'extraire des pages web des valeurs qui seront ensuite utilisées par le plugin pour l'extraction des actes.
 
-Pour l'activer sous Firefox, il faut utiliser la combinaison de touches Ctrl + Maj + K. Apparait alors une zone/fenêtre dont l'entête possède de multiples onglets. Assurez-vous que c'est l'onglet Console qui est sélectionné. En bas de cette console, se trouve une ligne symbolisée par deux chevrons bleu à gauche, c'est là qu'il faut saisir le code donné dans ce guide, et terminer l'exécution en appuyant sur la touche Entrée. 
+Pour l'activer sous Firefox, il faut utiliser la combinaison de touches Ctrl + Maj + K. Apparait alors une zone/fenêtre dont l'entête possède de multiples onglets. Assurez-vous que c'est l'onglet Console qui est sélectionné. En bas de cette console, se trouve une ligne symbolisée par deux chevrons bleu à gauche, c'est là qu'il faut saisir le code donné dans ce guide, et terminer l'exécution en appuyant sur la touche Entrée.
+![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/firefox_console_web.png "Console Web sous Firefox")
 
 ## Test du plugin
 
