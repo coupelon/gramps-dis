@@ -22,7 +22,7 @@
 
 __author__ = "Olivier Coupelon"
 __copyright__ = "Copyright 2013, Olivier Coupelon"
-__credits__ = ["Olivier Coupelon", "Donald N. Allingham", "Brian Matherly", "Romjerome"]
+__credits__ = ["Olivier Coupelon", "Donald N. Allingham", "Brian Matherly", "Jérôme Rapinat"]
 __license__ = "GPL"
 __version__ = "1.0.2"
 __maintainer__ = "Olivier Coupelon"
