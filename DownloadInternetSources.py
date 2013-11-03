@@ -22,7 +22,7 @@
 
 __author__ = "Olivier Coupelon"
 __copyright__ = "Copyright 2013, Olivier Coupelon"
-__credits__ = ["Olivier Coupelon", "Donald N. Allingham", "Brian Matherly", "Jérôme Rapinat"]
+__credits__ = ["Olivier Coupelon", "Donald N. Allingham", "Brian Matherly", "Jerome Rapinat"]
 __license__ = "GPL"
 __version__ = "1.0.2"
 __maintainer__ = "Olivier Coupelon"
@@ -45,6 +45,7 @@ import os
 import Image
 from urlparse import urlparse, parse_qs
 import cookielib
+import re
   
 #------------------------------------------------------------------------
 #
@@ -208,6 +209,9 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
         if o.netloc == "www.archives-aube.fr":
             image_url = self.get_image_url_from_AD10(o, path, description)
             return image_url
+        if o.netloc == "www.archinoe.fr":
+            image_url = self.get_image_url_from_AD79(o, path, description)
+            return image_url
         if o.netloc == "www.archives43.fr":
             image_url = self.get_image_url_from_AD43(o,url.get_path(), path, description)
             return image_url
@@ -356,6 +360,44 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                 return image_name[2], id, "image/jpeg"
         else:
             return "Ce format d'url n'est pas supporte pour AD67"
+    
+    #----------------------------------------------
+    # Data retrieval for AD79 : http://archives.deux-sevres.com/Archives79/default.aspx
+    #----------------------------------------------
+    def get_image_url_from_AD79(self, o, path, description):
+        if o.path.find("/gramps") == 0 :
+            query_tuple = parse_qs(o.query, keep_blank_values=True)
+            id = ''.join(query_tuple["id"])
+            page = ''.join(query_tuple["p"])
+            
+            image_name = self.generate_filename_and_ensure_not_exists(path, id, None, "AD79", ".jpg", description)
+            if (not image_name[1]):
+            
+                cj = cookielib.CookieJar()
+                opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+                
+                # 1. Get Session ID
+                opener.open("http://www.archinoe.fr/cg79/registre_prepare.php?id=" + id).read()
+                # 2. Get to the right archive
+                opener.open("http://www.archinoe.fr/cg79/registre_prepare.php?id=" + id).read()
+                # 3. Get the image location
+                content = opener.open("http://www.archinoe.fr/cg79/visu_affiche_util.php?o=TILE&param=visu&x=2920&y=0&l=2600&h=2920&ol=2600&oh=2920&r=0&n=0&b=0&c=0&p=" + page).read()
+                # 4. Get the image information
+                content = opener.open("http://www.archinoe.fr" + content + ".txt").read()
+                match = re.search('(\d+) x (\d+)', content)
+                width = match.group(1)
+                height = match.group(2)
+                # 5. Get the full image link
+                content = opener.open("http://www.archinoe.fr/cg79/visu_affiche_util.php?o=TILE&param=visu&x=0&y=0&l=" + width + "&h=" + height + "&ol=" + width + "&oh=" + height + "&r=0&n=0&b=0&c=0&p=" + page).read()
+                # 6. Get the image
+                content = opener.open("http://www.archinoe.fr" + content).read()
+                
+                file = open(image_name[0],"wb")
+                file.write(content)
+                file.close()
+                return image_name[2], id, "image/jpeg"
+        else:
+            return "Ce format d'url n'est pas supporte pour AD79"
     
     #----------------------------------------------
     # Data retrieval for AD81 : http://archives.tarn.fr/

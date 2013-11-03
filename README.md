@@ -81,6 +81,11 @@ Site : http://etat-civil.bas-rhin.fr/
 
 Extraction du lien d'un acte : Une fois sur la page à conserver, il faut activer dans le navigateur web le mode d'analyse réseau. Voir la section 'Analyse réseau'. Il faut ensuite cliquer sur Imprimer, une adresse apparait alor dans l'analyseur réseau, il faut copier cette adresse.
 
+### 79 Deux-Sèvres
+Site : http://archives.deux-sevres.com/Archives79/default.aspx
+
+Extraction du lien d'un acte : Le site ne dispose pas de liens permanent, mais permet d'exporter durant la session courante une page en PDF ou JPG. Il est néanmoins possible d'extraire un lien d'acte de la manière suivante. Il faut tout d'abord naviguer sur la page de l'acte à sauvegarder. Il faut ensuite ouvrir la console javascript et y coller la valeur suivante, tel que décrit dans la section 'Console JavaScript' : `alert("http://www.archinoe.fr/gramps?id=" + document.f1.lcote.value + "&p=" + document.f1.pageVisu.value)`. Une fenêtre apparait alors avec l'adresse à recopier correspondant au lien de l'acte interprétable par ce plugin. Attention, ce lien est fictif est ne peut être utilisé hors du plugin.
+
 ### 81 Tarn
 Site : http://archives.tarn.fr/
 
@@ -92,6 +97,11 @@ Le mode analyse réseau permet aux navigateurs web d'exposer les opérations qu'il
 Pour l'activer sous Google Chrome il faut utiliser la combinaison de touches Ctrl + Maj + I. Apparait alors une zone/fenêtre dont l'entête possède de multiples onglets. Cliquer sur l'onglet Réseau (Network). Au fur et à mesure des pages visitées sur internet, des liens vont apparaître dans la liste de cette fenêtre. Il suffit de faire un clic droit sur un des liens et de cliquer sur 'Copier le lien' (Copy link address) pour sauvegarder l'adresse d'un acte. Pour que la liste soit idéalement courte, et ne contienne que la page recherchée, il suffit d'ouvrir cette fenêtre au dernier moment et de la refermer entre chaque page.
 
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/chrome_copie_lien.png "Analyse des flux réseau sous Chrome")
+
+### Console JavaScript
+La console javascript permet d'exécuter et de contrôler l'exécution du code JavaScript des sites web. Dans notre cas, nous l'utilisons parfois afin d'extraire des pages web des valeurs qui seront ensuite utilisées par le plugin pour l'extration des actes.
+
+Pour l'activer sous Firefox, il faut utiliser la combinaison de touches Ctrl + Maj + K. Apparait alors une zone/fenêtre dont l'entête possède de multiples onglets. Assurez-vous que c'est l'onglet Console qui est sélectionné. En bas de cette console, se trouve une ligne symbolisée par deux chevrons bleu à gauche, c'est là qu'il faut saisir le code donné dans ce guide, et terminer l'exécution en appuyant sur la touche Entrée. 
 
 ## Test du plugin
 
