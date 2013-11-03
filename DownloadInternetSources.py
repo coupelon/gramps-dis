@@ -205,6 +205,9 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
         if o.netloc == "archivesenligne.tarn.fr":
             image_url = self.get_image_url_from_AD81(o, path, description)
             return image_url
+        if o.netloc == "www.archives-aube.fr":
+            image_url = self.get_image_url_from_AD10(o, path, description)
+            return image_url
         if o.netloc == "www.archives43.fr":
             image_url = self.get_image_url_from_AD43(o,url.get_path(), path, description)
             return image_url
@@ -239,6 +242,33 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                 size_y = 0
             background.save(image_name[0])
             return image_name[2], image_cote + " P" + str(image_page), "image/jpeg"        
+
+    #----------------------------------------------
+    # Data retrieval for AD10 : http://www.archives-aube.fr/arkotheque/etat_civil/index.php
+    #----------------------------------------------
+    def get_image_url_from_AD10(self, o, path, description):
+        if o.path.find("/arkotheque/arkotheque_img_print.php") == 0 :
+            query_tuple = parse_qs(o.query, keep_blank_values=True)
+            arkotheque_img_load = ''.join(query_tuple["arg2"])
+            arko = arkotheque_img_load[arkotheque_img_load.rfind("arko=") + 5:]
+            decoded = base64.b64decode(arko)
+            
+            # TODO: try to factorize the arko ID generation
+            offset_fin_id = decoded.find(".JPG")
+            offset_debut_id = decoded[:offset_fin_id].rfind("\"") + 1
+            id = decoded[offset_debut_id:offset_fin_id].replace("_"," ").replace("/",",")
+            
+            image_name = self.generate_filename_and_ensure_not_exists(path, id, None, "AD10", ".jpg", description)
+            if (not image_name[1]):
+                content = urllib2.urlopen("http://www.archives-aube.fr/arkotheque/arkotheque_img_download.php?arko=" + arko).read()
+                # A HTML + Javascript header ?!? is added to the downloaded file this way, so just find the raw JPG file and keep only that.
+                jpeg_offset = content.find('\xff\xd8')
+                file = open(image_name[0],"wb")
+                file.write(content[jpeg_offset:])
+                file.close()
+                return image_name[2], id, "image/jpeg"
+        else:
+            return "Ce format d'url n'est pas supporte pour AD10"
     
     #----------------------------------------------
     # Data retrieval for AD12 : http://archives.aveyron.fr/archive/recherche/etatcivil/n:22

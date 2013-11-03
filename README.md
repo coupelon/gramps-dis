@@ -42,6 +42,12 @@ Une fois les liens créés pour les individus, il faut exécuter le plugin qui va a
 ## Guide des archives couvertes par le plugin
 La version actuelle (1.0.1 du 20/10/2013) couvre les sites d'archives départementales suivants.
 
+
+### 10 Aube
+Site : http://www.archives-aube.fr
+
+Extraction du lien d'un acte : Le site des archives de l'aube offre un bouton de téléchargement direct des actes en JPG, ce qui est peut être utilisé pour intégrer à la mais des actes. Le plugin peut toutefois effectuer cette opération pour vous de la manière suivante. Il faut cliquer sur le bouton impression disponible sur la page souhaitée. Une nouvelle fenêtre s'ouvre alors dans la navigateur, il faut copier l'adresse de cette page, généralement située dans la barre d'adresse en haut de l'écran.
+
 ### 12 Aveyron
 Site : http://archives.aveyron.fr
 
