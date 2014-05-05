@@ -21,10 +21,10 @@
 #
 
 __author__ = "Olivier Coupelon"
-__copyright__ = "Copyright 2013, Olivier Coupelon"
+__copyright__ = "Copyright 2014, Olivier Coupelon"
 __credits__ = ["Olivier Coupelon", "Donald N. Allingham", "Brian Matherly", "Jerome Rapinat"]
 __license__ = "GPL"
-__version__ = "1.0.2"
+__version__ = "1.1.1"
 __maintainer__ = "Olivier Coupelon"
 __email__ = "olivier@coupelon.net"
 __status__ = "Development"
@@ -52,17 +52,21 @@ import re
 # GRAMPS modules
 #
 #------------------------------------------------------------------------
-from gui.plug.tool import Tool
-from gui.plug import MenuToolOptions, PluginWindows
-from gen.plug.menu import StringOption, FilterOption, PersonOption, \
+from gramps.gui.plug.tool import Tool
+from gramps.gui.plug import MenuToolOptions, PluginWindows
+from gramps.gen.plug.menu import StringOption, FilterOption, PersonOption, \
     EnumeratedListOption
-import gen.lib
-from gen.db import DbTxn
-import gen.plug.report.utils as ReportUtils
-from gen.display.name import displayer as name_displayer
-import const
-from TransUtils import get_addon_translator
-_ = get_addon_translator(__file__).gettext
+import gramps.gen.lib
+from gramps.gen.db import DbTxn
+import gramps.gen.plug.report.utils as ReportUtils
+from gramps.gen.display.name import displayer as name_displayer
+from gramps.gen.lib.mediaobj import MediaObject
+from gramps.gen.lib.mediaref import MediaRef
+import gramps.gen.const
+from gramps.gen.utils.grampslocale import GrampsLocale
+_ = GrampsLocale().translation.gettext
+import logging
+LOG = logging.getLogger(".DownloadInternetSources")
   
 #------------------------------------------------------------------------
 #
@@ -134,6 +138,8 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
     def run(self):
         self.skeys = {} 
         
+    	LOG.info("Browsing page sources")
+
         with DbTxn(_("Download Internet Sources"), self.db, batch=True) as self.trans:
             self.add_results_frame(_("Results"))
             self.results_write(_("Processing...\n"))
@@ -149,6 +155,8 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                                  self.db.get_person_handles(sort_handles=False))
   
             media_directory = self.db.get_mediapath()
+
+            LOG.info("Chosen media directory: " + media_directory)
             
             num_people = len(people)
             self.results_write(_("Attaching sources...\n"))
@@ -172,14 +180,14 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                     result = self.determine_cote_from_url(url, path, url.get_description())
                     if result != None and len(result) == 3:
                         # 0: relative_path, 1: title, 2: type
-                        media = gen.lib.mediaobj.MediaObject()
+                        media = MediaObject()
                         media.set_description(result[1])
                         media.set_path(dir_name + os.sep + result[0])
                         media.set_mime_type(result[2])
                         self.db.add_object(media, self.trans)
                         self.db.commit_media_object(media, self.trans)
                         
-                        mediaref = gen.lib.mediaref.MediaRef()
+                        mediaref = MediaRef()
                         mediaref.set_reference_handle(media.handle)
                         person.add_media_reference(mediaref)
                         self.db.commit_person(person, self.trans)
@@ -190,6 +198,7 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
         self.results_write("Done!\n")
         
     def determine_cote_from_url(self, url, path, description):
+    	LOG.debug("Determine if url needs to be retrieved : " + url.get_path())
         o = urlparse(url.get_path())
         if o.netloc == "www.archivesdepartementales.puydedome.fr":
             image_url = self.get_image_url_from_AD63(o, path, description)
