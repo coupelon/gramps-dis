@@ -18,7 +18,8 @@ Pour toute information, contactez moi : olivier [arob@se] coupelon.net
 
 ## Installation
 L'installation du plugin revient à un simple copier/coller dans le dossier utilisateur de Gramps. Il faut donc avoir exécuté au moins une fois Gramps pour que ce dernier existe. Il contient un dossier plugins, dans lequel les fichiers *.py de ce projet doivent être copiés.
-Sous windows 7, le dossier se trouve généralement à l'emplacement : _C:\Users\<utilisateur>\AppData\Roaming\gramps\gramps34\plugins_.
+Sous windows 7, le dossier se trouve généralement à l'emplacement : _C:\Users\<utilisateur>\AppData\Roaming\gramps\gramps40\plugins_.
+Sous linux, le dossier est généralement : _/home/<utilisateur>/.gramps/gramps40/plugins/_.
 
 ## Utilisation du plugin
 L'utilisation de ce plugin est complexe. En pratique, il n'existe pas actuellement de moyen standard pour enregistrer les informations nécessaires à l'extraction des pages recherchées. La convention adoptée par le plugin est donc la suivante.
@@ -40,7 +41,7 @@ Une fois les liens créés pour les individus, il faut exécuter le plugin qui va a
 4. Enregistrer cette image dans la galerie de cet indidu.
 
 ## Guide des archives couvertes par le plugin
-La version actuelle (1.0.2 du 03/11/2013) couvre les sites d'archives départementales suivants.
+La version actuelle (1.1.1 du 05/05/2014) couvre les sites d'archives départementales suivants.
 
 
 ### 10 Aube
