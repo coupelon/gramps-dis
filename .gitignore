@@ -1,1 +1,2 @@
-DownloadInternetSources.pyo
+*.pyo
+.idea
