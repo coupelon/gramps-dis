@@ -380,7 +380,7 @@ if __name__ == "__main__":
             #["lozere", "http://archives.lozere.fr/archive/permalink?image=e0000383&dir=%2Fhome%2Fhttpd%2Fad48%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad48.ligeo%2Fimages%2FEtatCivil%2Fjpeg%2F4e184001&cote=4%20E%20184%2F1"],
             ["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
             ["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
-            ["tarn", "http://archivesenligne.tarn.fr/affichage.php?image=/archives/4E/EC000448/4E08600606/810860013.jpg"]
+            #["tarn", "http://archivesenligne.tarn.fr/affichage.php?image=/archives/4E/EC000448/4E08600606/810860013.jpg"]
             ]
 
     for url in urls:

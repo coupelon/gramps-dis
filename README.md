@@ -1,110 +1,110 @@
-## Présentation
-Ce projet est un plugin pour Gramps (http://gramps-project.org/) qui doit permettre l'extraction et le stockage des pages d'archives correspondant individus d'un arbre généalogique.
-En effet, avec la démocratisation des archives départementales en lignes, il est commun d'effectuer ses recherches intégralement sur internet.
-Pour la pérennité des recherches effectuées, nombre de généalogistes enregistrent les coordonnées des informations consultées (Type et numéro d'acte, numéro de page...), afin d'être en mesure d'y retourner par la suite. Ces étapes, indispensables pour beaucoup, sont fortement dépendantes de la disponibilité des sites d'archives, dans l'immédiat et sur le long terme.
-Ce plugin permet simplement de conserver une copie, comme la prise de photos en salle d'archive, des documents concernant vos ancêtres.
+ï»¿## PrÃ©sentation
+Ce projet est un plugin pour Gramps (http://gramps-project.org/) qui doit permettre l'extraction et le stockage des pages d'archives correspondant individus d'un arbre gÃ©nÃ©alogique.
+En effet, avec la dÃ©mocratisation des archives dÃ©partementales en lignes, il est commun d'effectuer ses recherches intÃ©gralement sur internet.
+Pour la pÃ©rennitÃ© des recherches effectuÃ©es, nombre de gÃ©nÃ©alogistes enregistrent les coordonnÃ©es des informations consultÃ©es (Type et numÃ©ro d'acte, numÃ©ro de page...), afin d'Ãªtre en mesure d'y retourner par la suite. Ces Ã©tapes, indispensables pour beaucoup, sont fortement dÃ©pendantes de la disponibilitÃ© des sites d'archives, dans l'immÃ©diat et sur le long terme.
+Ce plugin permet simplement de conserver une copie, comme la prise de photos en salle d'archive, des documents concernant vos ancÃªtres.
 
 ## Mise en garde et conditions d'utilisation
-L'utilisation d'un tel outil peut être contraire aux conditions d'utilisation des sites d'archives départementales. En tout état de cause, il incombe à chaque utilisateur de prendre connaissance de ces conditions d'utilisation, et de se référer aux archives utilisées en cas de doute. 
-En outre, l'utilisation du plugin n'est pas triviale, car tous les sites ne facilitent pas cette extraction. Il est souvent nécessaire de mettre à jour le plugin pour avoir à sa disposition les derniers algorithmes d'extraction, les sites étant modifiés par leurs auteurs sans préavis.
+L'utilisation d'un tel outil peut Ãªtre contraire aux conditions d'utilisation des sites d'archives dÃ©partementales. En tout Ã©tat de cause, il incombe Ã  chaque utilisateur de prendre connaissance de ces conditions d'utilisation, et de se rÃ©fÃ©rer aux archives utilisÃ©es en cas de doute. 
+En outre, l'utilisation du plugin n'est pas triviale, car tous les sites ne facilitent pas cette extraction. Il est souvent nÃ©cessaire de mettre Ã  jour le plugin pour avoir Ã  sa disposition les derniers algorithmes d'extraction, les sites Ã©tant modifiÃ©s par leurs auteurs sans prÃ©avis.
 
 **Aucune garantie n'est fournie quant au fonctionnement d'une extraction.**
 
-## Appel à contribution
-Le maintien des algorithmes d'extraction est un travail long étant donné le nombre de sites visés. Toute aide est la bienvenue, ce travail étant plus facilement effectué par les personnes disposant :
-1. de recherches réelles sur les sites concernés, ce qui permet de balayer tous les types d'actes et de documents, et donc d'obtenir un algorithme le plus générique possible
-2. de connaissance en développement informatique. Ce plugin est développé en Python, langage puissant à la fois adapté aux débutants et aux développeurs expérimentés.
+## Appel Ã  contribution
+Le maintien des algorithmes d'extraction est un travail long Ã©tant donnÃ© le nombre de sites visÃ©s. Toute aide est la bienvenue, ce travail Ã©tant plus facilement effectuÃ© par les personnes disposant :
+1. de recherches rÃ©elles sur les sites concernÃ©s, ce qui permet de balayer tous les types d'actes et de documents, et donc d'obtenir un algorithme le plus gÃ©nÃ©rique possible
+2. de connaissance en dÃ©veloppement informatique. Ce plugin est dÃ©veloppÃ© en Python, langage puissant Ã  la fois adaptÃ© aux dÃ©butants et aux dÃ©veloppeurs expÃ©rimentÃ©s.
 Pour toute information, contactez moi : olivier [arob@se] coupelon.net
 
 ## Installation
-L'installation du plugin revient à un simple copier/coller dans le dossier utilisateur de Gramps. Il faut donc avoir exécuté au moins une fois Gramps pour que ce dernier existe. Il contient un dossier plugins, dans lequel les fichiers *.py de ce projet doivent être copiés.
-Sous windows 7, le dossier se trouve généralement à l'emplacement : _C:\Users\<utilisateur>\AppData\Roaming\gramps\gramps40\plugins_.
-Sous linux, le dossier est généralement : _/home/<utilisateur>/.gramps/gramps40/plugins/_.
+L'installation du plugin revient Ã  un simple copier/coller dans le dossier utilisateur de Gramps. Il faut donc avoir exÃ©cutÃ© au moins une fois Gramps pour que ce dernier existe. Il contient un dossier plugins, dans lequel les fichiers *.py de ce projet doivent Ãªtre copiÃ©s.
+Sous windows 7, le dossier se trouve gÃ©nÃ©ralement Ã  l'emplacement : _C:\Users\<utilisateur>\AppData\Roaming\gramps\gramps40\plugins_.
+Sous linux, le dossier est gÃ©nÃ©ralement : _/home/<utilisateur>/.gramps/gramps40/plugins/_.
 
 ## Utilisation du plugin
-L'utilisation de ce plugin est complexe. En pratique, il n'existe pas actuellement de moyen standard pour enregistrer les informations nécessaires à l'extraction des pages recherchées. La convention adoptée par le plugin est donc la suivante.
+L'utilisation de ce plugin est complexe. En pratique, il n'existe pas actuellement de moyen standard pour enregistrer les informations nÃ©cessaires Ã  l'extraction des pages recherchÃ©es. La convention adoptÃ©e par le plugin est donc la suivante.
 
 ### Enregistrement pour chaque individu d'un lien vers la page
-Pour associer une page d'acte à un individu, il est nécessaire d'enregistrer une adresse internet correspondant à celle qui sera utilisée par l'algorithme lors de l'extraction (voir figure ci-dessous). L'adresse de cette page peut parfois nécessiter des outils supplémentaires, car les adresses recherchées, qui permettent d'accéder directement à la page d'acte qui nous intéresse, ne sont pas toujours exposées directement par les sites web. C'est notamment le cas des sites d'archives qui ne comporte pas de liens 'permanents', qui ont pour fonction de retourner directement sur une page visitée, une sorte de marque page. Les détails pour chaque site permettant d'enregistrer une adresse utilisable par le plugin sont donnés dans la section 'Guide des archives couvertes par le plugin'.
+Pour associer une page d'acte Ã  un individu, il est nÃ©cessaire d'enregistrer une adresse internet correspondant Ã  celle qui sera utilisÃ©e par l'algorithme lors de l'extraction (voir figure ci-dessous). L'adresse de cette page peut parfois nÃ©cessiter des outils supplÃ©mentaires, car les adresses recherchÃ©es, qui permettent d'accÃ©der directement Ã  la page d'acte qui nous intÃ©resse, ne sont pas toujours exposÃ©es directement par les sites web. C'est notamment le cas des sites d'archives qui ne comporte pas de liens 'permanents', qui ont pour fonction de retourner directement sur une page visitÃ©e, une sorte de marque page. Les dÃ©tails pour chaque site permettant d'enregistrer une adresse utilisable par le plugin sont donnÃ©s dans la section 'Guide des archives couvertes par le plugin'.
 
-![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/gramps_saisie_site_internet.png "Saisie d'un site internet pour un individu, correspondant à l'extrait d'acte à conserver")
+![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/gramps_saisie_site_internet.png "Saisie d'un site internet pour un individu, correspondant Ã  l'extrait d'acte Ã  conserver")
 
-### Exécution de l'extraction
-Une fois les liens créés pour les individus, il faut exécuter le plugin qui va alors, pour chaque individu :
+### ExÃ©cution de l'extraction
+Une fois les liens crÃ©Ã©s pour les individus, il faut exÃ©cuter le plugin qui va alors, pour chaque individu :
 
 1. Explorer les liens internet disponibles
 
-2. Vérifier que pour cette personne, ce lien et cette description, qu'un fichier n'existe pas déjà
+2. VÃ©rifier que pour cette personne, ce lien et cette description, qu'un fichier n'existe pas dÃ©jÃ 
 
-3. Télécharger l'image de la page
+3. TÃ©lÃ©charger l'image de la page
 
 4. Enregistrer cette image dans la galerie de cet indidu.
 
 ## Guide des archives couvertes par le plugin
-La version actuelle (1.1.1 du 05/05/2014) couvre les sites d'archives départementales suivants.
+La version actuelle (1.1.1 du 05/05/2014) couvre les sites d'archives dÃ©partementales suivants.
 
 
 ### 10 Aube
 Site : http://www.archives-aube.fr
 
-Extraction du lien d'un acte : Le site des archives de l'aube offre un bouton de téléchargement direct des actes en JPG, ce qui est peut être utilisé pour intégrer à la main des actes. Le plugin peut toutefois effectuer cette opération pour vous de la manière suivante. Il faut cliquer sur le bouton impression disponible sur la page souhaitée. Une nouvelle fenêtre s'ouvre alors dans la navigateur, il faut copier l'adresse de cette page, généralement située dans la barre d'adresse en haut de l'écran.
+Extraction du lien d'un acte : Le site des archives de l'aube offre un bouton de tÃ©lÃ©chargement direct des actes en JPG, ce qui est peut Ãªtre utilisÃ© pour intÃ©grer Ã  la main des actes. Le plugin peut toutefois effectuer cette opÃ©ration pour vous de la maniÃ¨re suivante. Il faut cliquer sur le bouton impression disponible sur la page souhaitÃ©e. Une nouvelle fenÃªtre s'ouvre alors dans la navigateur, il faut copier l'adresse de cette page, gÃ©nÃ©ralement situÃ©e dans la barre d'adresse en haut de l'Ã©cran.
 
 ### 12 Aveyron
 Site : http://archives.aveyron.fr
 
-Extraction du lien d'un acte : Une fois sur la page à conserver, il suffit de copier le lien permanent disponible en haut à droite :
+Extraction du lien d'un acte : Une fois sur la page Ã  conserver, il suffit de copier le lien permanent disponible en haut Ã  droite :
 
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/permalien_ligeo.png "Lien permanent AD12")
 
-### 43 Haute Loire
+### 43 Haute Loire  (en panne)
 Site : http://www.archives43.fr
 
-Note : Les administrateurs du site travaillent à l'ajout d'un lien permanent, ce qui devrait faciliter les opérations.
+Note : Les administrateurs du site travaillent Ã  l'ajout d'un lien permanent, ce qui devrait faciliter les opÃ©rations.
 
-Extraction du lien d'un acte : Pour trouver le lien permanent d'une page, il faut une fois sur cette dernière cliquer sur le bouton d'impression du site. Une nouvelle fenêtre s'ouvre alors dans la navigateur, il faut copier l'adresse de cette page, généralement située dans la barre d'adresse en haut de l'écran.
+Extraction du lien d'un acte : Pour trouver le lien permanent d'une page, il faut une fois sur cette derniÃ¨re cliquer sur le bouton d'impression du site. Une nouvelle fenÃªtre s'ouvre alors dans la navigateur, il faut copier l'adresse de cette page, gÃ©nÃ©ralement situÃ©e dans la barre d'adresse en haut de l'Ã©cran.
 
-### 48 Lozère
+### 48 LozÃ¨re  (en panne)
 Site : http://archives.lozere.fr
 
-Extraction du lien d'un acte : Une fois sur la page à conserver, il suffit de copier le lien permanent disponible en haut à droite :
+Extraction du lien d'un acte : Une fois sur la page Ã  conserver, il suffit de copier le lien permanent disponible en haut Ã  droite :
 
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/permalien_ligeo.png "Lien permanent AD48")
 
-### 63 Puy-de-dôme
+### 63 Puy-de-dÃ´me
 Site : http://www.archivesdepartementales.puydedome.fr
 
-Extraction du lien d'un acte : Une fois sur la page à conserver, il suffit de copier le lien permanent disponible en haut à droite :
+Extraction du lien d'un acte : Une fois sur la page Ã  conserver, il suffit de copier le lien permanent disponible en haut Ã  droite :
 
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/permalien_ligeo.png "Lien permanent AD63")
 
 ### 67 Bas-Rhin
 Site : http://etat-civil.bas-rhin.fr/
 
-Extraction du lien d'un acte : Une fois sur la page à conserver, il faut activer dans le navigateur web le mode d'analyse réseau. Voir la section 'Analyse réseau'. Il faut ensuite cliquer sur Imprimer, une adresse apparait alor dans l'analyseur réseau, il faut copier cette adresse.
+Extraction du lien d'un acte : Une fois sur la page Ã  conserver, il faut activer dans le navigateur web le mode d'analyse rÃ©seau. Voir la section 'Analyse rÃ©seau'. Il faut ensuite cliquer sur Imprimer, une adresse apparait alor dans l'analyseur rÃ©seau, il faut copier cette adresse.
 
-### 79 Deux-Sèvres
+### 79 Deux-SÃ¨vres
 Site : http://archives.deux-sevres.com/Archives79/default.aspx
 
-Extraction du lien d'un acte : Le site ne dispose pas de liens permanent, mais permet d'exporter durant la session courante une page en PDF ou JPG. Il est néanmoins possible d'extraire un lien d'acte de la manière suivante. Il faut tout d'abord naviguer sur la page de l'acte à sauvegarder. Il faut ensuite ouvrir la console javascript et y coller la valeur suivante, tel que décrit dans la section 'Console JavaScript' : `alert("http://www.archinoe.fr/gramps?id=" + document.f1.lcote.value + "&p=" + document.f1.pageVisu.value)`. Une fenêtre apparait alors avec l'adresse à recopier correspondant au lien de l'acte interprétable par ce plugin. Attention, ce lien est fictif est ne peut être utilisé hors du plugin.
+Extraction du lien d'un acte : Le site ne dispose pas de liens permanent, mais permet d'exporter durant la session courante une page en PDF ou JPG. Il est nÃ©anmoins possible d'extraire un lien d'acte de la maniÃ¨re suivante. Il faut tout d'abord naviguer sur la page de l'acte Ã  sauvegarder. Il faut ensuite ouvrir la console javascript et y coller la valeur suivante, tel que dÃ©crit dans la section 'Console JavaScript' : `alert("http://www.archinoe.fr/gramps?id=" + document.f1.lcote.value + "&p=" + document.f1.pageVisu.value)`. Une fenÃªtre apparait alors avec l'adresse Ã  recopier correspondant au lien de l'acte interprÃ©table par ce plugin. Attention, ce lien est fictif est ne peut Ãªtre utilisÃ© hors du plugin.
 
-### 81 Tarn
+### 81 Tarn (en panne)
 Site : http://archives.tarn.fr/
 
-Extraction du lien d'un acte : Il faut tout d'abord s'enregistrer sur le site des archives du tarn, pour obtenir un login et mot de passe qui devront être renseignés au lancement du plugin. Une fois la pages à conserver trouvée sur le site, il faut activer dans le navigateur web le mode d'analyse réseau. Voir la section 'Analyse réseau'. Ensuite, il faut recharger cette page. Enfin, dans l'analyseur réseau, il faut copier l'adresse débutant par *http://archivesenligne.tarn.fr/affichage.php?image=*.
+Extraction du lien d'un acte : Il faut tout d'abord s'enregistrer sur le site des archives du tarn, pour obtenir un login et mot de passe qui devront Ãªtre renseignÃ©s au lancement du plugin. Une fois la pages Ã  conserver trouvÃ©e sur le site, il faut activer dans le navigateur web le mode d'analyse rÃ©seau. Voir la section 'Analyse rÃ©seau'. Ensuite, il faut recharger cette page. Enfin, dans l'analyseur rÃ©seau, il faut copier l'adresse dÃ©butant par *http://archivesenligne.tarn.fr/affichage.php?image=*.
 
-## Analyse réseau
-Le mode analyse réseau permet aux navigateurs web d'exposer les opérations qu'ils effectuent sur le réseau de manière habituellement transparante pour l'utilisateur.
+## Analyse rÃ©seau
+Le mode analyse rÃ©seau permet aux navigateurs web d'exposer les opÃ©rations qu'ils effectuent sur le rÃ©seau de maniÃ¨re habituellement transparante pour l'utilisateur.
 
-Pour l'activer sous Google Chrome il faut utiliser la combinaison de touches Ctrl + Maj + I. Apparait alors une zone/fenêtre dont l'entête possède de multiples onglets. Cliquer sur l'onglet Réseau (Network). Au fur et à mesure des pages visitées sur internet, des liens vont apparaître dans la liste de cette fenêtre. Il suffit de faire un clic droit sur un des liens et de cliquer sur 'Copier le lien' (Copy link address) pour sauvegarder l'adresse d'un acte. Pour que la liste soit idéalement courte, et ne contienne que la page recherchée, il suffit d'ouvrir cette fenêtre au dernier moment et de la refermer entre chaque page.
+Pour l'activer sous Google Chrome il faut utiliser la combinaison de touches Ctrl + Maj + I. Apparait alors une zone/fenÃªtre dont l'entÃªte possÃ¨de de multiples onglets. Cliquer sur l'onglet RÃ©seau (Network). Au fur et Ã  mesure des pages visitÃ©es sur internet, des liens vont apparaÃ®tre dans la liste de cette fenÃªtre. Il suffit de faire un clic droit sur un des liens et de cliquer sur 'Copier le lien' (Copy link address) pour sauvegarder l'adresse d'un acte. Pour que la liste soit idÃ©alement courte, et ne contienne que la page recherchÃ©e, il suffit d'ouvrir cette fenÃªtre au dernier moment et de la refermer entre chaque page.
 
-![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/chrome_copie_lien.png "Analyse des flux réseau sous Chrome")
+![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/chrome_copie_lien.png "Analyse des flux rÃ©seau sous Chrome")
 
 ### Console JavaScript
-La console javascript permet d'exécuter et de contrôler l'exécution du code JavaScript des sites web. Dans notre cas, nous l'utilisons parfois afin d'extraire des pages web des valeurs qui seront ensuite utilisées par le plugin pour l'extraction des actes.
+La console javascript permet d'exÃ©cuter et de contrÃ´ler l'exÃ©cution du code JavaScript des sites web. Dans notre cas, nous l'utilisons parfois afin d'extraire des pages web des valeurs qui seront ensuite utilisÃ©es par le plugin pour l'extraction des actes.
 
-Pour l'activer sous Firefox, il faut utiliser la combinaison de touches Ctrl + Maj + K. Apparait alors une zone/fenêtre dont l'entête possède de multiples onglets. Assurez-vous que c'est l'onglet Console qui est sélectionné. En bas de cette console, se trouve une ligne symbolisée par deux chevrons bleu à gauche, c'est là qu'il faut saisir le code donné dans ce guide, et terminer l'exécution en appuyant sur la touche Entrée.
+Pour l'activer sous Firefox, il faut utiliser la combinaison de touches Ctrl + Maj + K. Apparait alors une zone/fenÃªtre dont l'entÃªte possÃ¨de de multiples onglets. Assurez-vous que c'est l'onglet Console qui est sÃ©lectionnÃ©. En bas de cette console, se trouve une ligne symbolisÃ©e par deux chevrons bleu Ã  gauche, c'est lÃ  qu'il faut saisir le code donnÃ© dans ce guide, et terminer l'exÃ©cution en appuyant sur la touche EntrÃ©e.
 ![alt text](https://github.com/coupelon/gramps-dis/raw/master/images/firefox_console_web.png "Console Web sous Firefox")
 
 ## Test du plugin
 
-Le plugin, pour être testé, utilise une base de démonstration disponible dans le dossier test de ce projet. Le choix d'un chemin alternatif pour le stockage des fichiers téléchargés est supporté par le plugin, il est donc conseillé de la modifier lors des tests dans le menu 'préférences' de Gramps.
+Le plugin, pour Ãªtre testÃ©, utilise une base de dÃ©monstration disponible dans le dossier test de ce projet. Le choix d'un chemin alternatif pour le stockage des fichiers tÃ©lÃ©chargÃ©s est supportÃ© par le plugin, il est donc conseillÃ© de la modifier lors des tests dans le menu 'prÃ©fÃ©rences' de Gramps.

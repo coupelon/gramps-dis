@@ -167,15 +167,17 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                 for url in person.get_url_list():
                     dir_name = person.get_primary_name().get_regular_name() + "-" + person.get_gramps_id()
                     if media_directory:
-                        path = media_directory + os.sep + "gdis" + os.sep + dir_name
+                        path = media_directory + os.sep + dir_name
                     else:
-                        path = const.USER_HOME + os.sep + "gdis" + os.sep + dir_name
-                    result = SeekAndDownload(self.options.handler.options_dict['ad81_login'],self.options.handler.options_dict['ad81_password']).determine_cote_from_url(url.get_path(), path, url.get_description())
+                        path = const.USER_HOME + os.sep + dir_name
+                    result = SeekAndDownload(self.options.handler.options_dict['ad81_login'],
+                                             self.options.handler.options_dict['ad81_password'])\
+                        .determine_cote_from_url(url.get_path(), path, url.get_description())
                     if result != None and len(result) == 3:
                         # 0: relative_path, 1: title, 2: type
                         media = MediaObject()
                         media.set_description(result[1])
-                        media.set_path("gdis" + os.sep + dir_name + os.sep + result[0])
+                        media.set_path(dir_name + os.sep + result[0])
                         media.set_mime_type(result[2])
                         self.db.add_object(media, self.trans)
                         self.db.commit_media_object(media, self.trans)
