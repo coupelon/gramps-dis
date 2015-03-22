@@ -42,7 +42,7 @@ import base64
 import urllib2
 import cStringIO
 import os
-import Image
+import PIL.Image
 from urlparse import urlparse, parse_qs
 import cookielib
 import re
@@ -233,7 +233,7 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
         image_page = int(''.join(query_tuple["image"])[-max_page_size:])
         image_name = self.generate_filename_and_ensure_not_exists(path, image_cote, image_page, caller, ".jpg", description)
         if (not image_name[1]):
-            image = [[Image.open(cStringIO.StringIO(urllib2.urlopen(urllib2.Request(image_url + "&SI=0/img_0" + str(k) + "_0" + str(m), None, {'User-Agent' : 'Mozilla/5.0'})).read())) for m in range(0,m_y)] for k in range(0,m_x)]
+            image = [[PIL.Image.open(cStringIO.StringIO(urllib2.urlopen(urllib2.Request(image_url + "&SI=0/img_0" + str(k) + "_0" + str(m), None, {'User-Agent' : 'Mozilla/5.0'})).read())) for m in range(0,m_y)] for k in range(0,m_x)]
             size_y = 0;
             size_x = 0;
             for k in range(0,m_x):
@@ -242,7 +242,7 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
             for m in range(0,m_y):
                 img_w,img_h=image[0][m].size
                 size_x += img_h
-            background = Image.new('RGBA', (size_y,size_x), (255, 255, 255, 255))
+            background = PIL.Image.new('RGBA', (size_y,size_x), (255, 255, 255, 255))
             size_y = 0;
             size_x = 0;
             img_h = 0
