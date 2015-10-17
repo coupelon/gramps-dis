@@ -65,7 +65,7 @@ class SeekAndDownload :
             image_url = self.get_image_url_from_AD81(o, path, description)
             return image_url
         if o.netloc == "www.archives-aube.fr":
-            image_url = self.get_image_url_from_AD10(o, path, description)
+            image_url = self.get_image_url_from_AD10(o, url, path, description)
             return image_url
         if o.netloc == "www.archinoe.fr":
             image_url = self.get_image_url_from_AD79(o, path, description)
@@ -115,28 +115,38 @@ class SeekAndDownload :
 
     # Data retrieval for AD10 : http://www.archives-aube.fr/arkotheque/etat_civil/index.php
     #----------------------------------------------
-    def get_image_url_from_AD10(self, o, path, description):
-        if o.path.find("/arkotheque/arkotheque_img_print.php") == 0:
-            query_tuple = parse_qs(o.query, keep_blank_values=True)
-            arkotheque_img_load = ''.join(query_tuple["arg2"])
-            arko = arkotheque_img_load[arkotheque_img_load.rfind("arko=") + 5:]
-            decoded = base64.b64decode(arko)
-
-            # TODO: try to factorize the arko ID generation
-            offset_fin_id = decoded.find(".JPG")
-            offset_debut_id = decoded[:offset_fin_id].rfind("\"") + 1
-            id = decoded[offset_debut_id:offset_fin_id].replace("_", " ").replace("/", ",")
-
+    def get_image_url_from_AD10(self, o, url, path, description):
+        if o.path.find("/ark:") == 0:
+        	# 1. Download the page containing the links
+        	# 2. Decode the base64 ark link to determine the correct page
+        	# 3. Parse the page's source to determine the jpg's url
+        	# 4. Parse the page's source to determine the jpg's identifier
+        	# 5. Download the jpg
+            cj = cookielib.CookieJar()
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+            content = opener.open(url).read()
+            reallink_debut = content.find('arko: ') + 7
+            reallink_fin = content.find('"',reallink_debut)
+            arko = content[reallink_debut:reallink_fin]
+            arko_decoded = base64.b64decode(arko)
+            page_number_start = arko_decoded.find(';i:')+3
+            page_number_end = arko_decoded.find(';',page_number_start)
+            page_number = arko_decoded[page_number_start:page_number_end]
+            image_link_start = content.find('>' + page_number + '</span>')
+            image_link_start = content.find('rel="', image_link_start) + 5
+            image_link_end = content.find('"',image_link_start)
+            image_link = content[image_link_start:image_link_end]
+            id_start = content.find("data-cote=",image_link_end) + 11
+            id_end = content.find('"',id_start)
+            id = content[id_start:id_end] + '_' + page_number
             image_name = self.generate_filename_and_ensure_not_exists(path, id, None, "AD10", ".jpg", description)
             if (not image_name[1]):
-                content = urllib2.urlopen(
-                    "http://www.archives-aube.fr/arkotheque/arkotheque_img_download.php?arko=" + arko).read()
-                # A HTML + Javascript header ?!? is added to the downloaded file this way, so just find the raw JPG file and keep only that.
-                jpeg_offset = content.find('\xff\xd8')
+                content = opener.open(image_link).read()
                 file = open(image_name[0], "wb")
-                file.write(content[jpeg_offset:])
+                file.write(content)
                 file.close()
                 return image_name[2], id, "image/jpeg"
+
         else:
             return "Ce format d'url n'est pas supporte pour AD10"
 
@@ -369,17 +379,17 @@ class SeekAndDownload :
 if __name__ == "__main__":
     import sys
     downloader = SeekAndDownload(sys.argv[1], sys.argv[2])
-    folder = "C:/home/olivier/Images/Gramps-Development"
+    folder = "/tmp"
 
-    urls = [["aube", "http://www.archives-aube.fr/arkotheque/arkotheque_img_print.php?arg1=unique&arg2=http%3A//www.archives-aube.fr/arkotheque/arkotheque_img_load.php%3Farko%3DYTo1OntzOjQ6InJlZjAiO3M6MzoiYXJrIjtzOjQ6InJlZjEiO2k6MzU7czo0OiJyZWYyIjtpOjEyOTtzOjQ6InJlZjMiO3M6NDY6IjM4N19nZ18wMV8wMDAwMjZfYy8zODdfZ2dfMDFfMDAwMDI2XzAwMTFfYy5KUEciO3M6NDoicmVmNCI7czozMjoiOGMzYzk0YmQyZmNkMDhiOTA5ZDg2Y2U0YjY3YWNkN2IiO30%3D&arg3=87.6041918581217&arg4=-1301.3&arg5=-352.5&arg6=35|129&arg7=&arg8=-1&arg9=arko&arg10=0"],
-            ["aveyron", "http://archives.aveyron.fr/archive/permalink?image=FRAD012_EC_000184_4E025977_005&dir=%2Fhome%2Fhttpd%2Fad12%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad12.ligeo%2Fimages%2FFRAD012_EC%2FFRAD012_EC_000184%2FFRAD012_EC_000184_4E025977&cote=4E157-31"],
-            ["basrhin", "http://etat-civil.bas-rhin.fr/adeloch/cg67_img_load.php?arko=YTo0OntzOjQ6InJlZjEiO2k6NDM3NDtzOjQ6InJlZjIiO2k6OTtzOjQ6InJlZjMiO3M6NzI6Ii9kYXRhL251bWVyaXNhdGlvbi9BRDY3X0VDX1JFVl8wMDAwLzRfRV8wMDlfMDA3L0FENjdfRUNfMDA5MDI2MDAwMDAxLkpQRyI7czo4OiJyZWZfc2VzcyI7czozMjoiOGFlYTMyOTM3ZmM3MjdhMDE5NjYwYzRhNjIxMjcwNTAiO30=&oh=1"],
-            ["deuxsevres", "http://www.archinoe.fr/gramps?id=790002444&p=100"],
-            ["hauteloire", "http://www.archives43.fr/arkotheque/visionneuse/print_view.php?width=1124&height=717&top=0&left=-229.671875&tw=1584&th=727&bri=0&cont=0&inv=0&rot=F&imgSrc=http%3A%2F%2Fwww.archives43.fr%2Farkotheque%2Fvisionneuse%2Fimg_prot.php%3Fi%3D31.jpg&tit=Le%20Puy-en-Velay%201881%201881%20&cot=6%20E%20178%2F238%20&ref=ark|3|2640|2640|30"],
-            ["hauteloireold", "http://www.archives43.fr/arkotheque/arkotheque_print_archives.php?arko_args=a:2:{s:10:%22zoomdepart%22;d:43.8712493180578;s:10:%22img_ref_id%22;s:19:%22ark|3|3794|3794|464%22;}"],
+    urls = [["aube", "http://www.archives-aube.fr/ark:/42751/s00556835d4834b6/556835d4969d0"], 
+            #["aveyron", "http://archives.aveyron.fr/archive/permalink?image=FRAD012_EC_000184_4E025977_005&dir=%2Fhome%2Fhttpd%2Fad12%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad12.ligeo%2Fimages%2FFRAD012_EC%2FFRAD012_EC_000184%2FFRAD012_EC_000184_4E025977&cote=4E157-31"],
+            #["basrhin", "http://etat-civil.bas-rhin.fr/adeloch/cg67_img_load.php?arko=YTo0OntzOjQ6InJlZjEiO2k6NDM3NDtzOjQ6InJlZjIiO2k6OTtzOjQ6InJlZjMiO3M6NzI6Ii9kYXRhL251bWVyaXNhdGlvbi9BRDY3X0VDX1JFVl8wMDAwLzRfRV8wMDlfMDA3L0FENjdfRUNfMDA5MDI2MDAwMDAxLkpQRyI7czo4OiJyZWZfc2VzcyI7czozMjoiOGFlYTMyOTM3ZmM3MjdhMDE5NjYwYzRhNjIxMjcwNTAiO30=&oh=1"],
+            #["deuxsevres", "http://www.archinoe.fr/gramps?id=790002444&p=100"],
+            #["hauteloire", "http://www.archives43.fr/arkotheque/visionneuse/print_view.php?width=1124&height=717&top=0&left=-229.671875&tw=1584&th=727&bri=0&cont=0&inv=0&rot=F&imgSrc=http%3A%2F%2Fwww.archives43.fr%2Farkotheque%2Fvisionneuse%2Fimg_prot.php%3Fi%3D31.jpg&tit=Le%20Puy-en-Velay%201881%201881%20&cot=6%20E%20178%2F238%20&ref=ark|3|2640|2640|30"],
+            #["hauteloireold", "http://www.archives43.fr/arkotheque/arkotheque_print_archives.php?arko_args=a:2:{s:10:%22zoomdepart%22;d:43.8712493180578;s:10:%22img_ref_id%22;s:19:%22ark|3|3794|3794|464%22;}"],
             #["lozere", "http://archives.lozere.fr/archive/permalink?image=e0000383&dir=%2Fhome%2Fhttpd%2Fad48%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad48.ligeo%2Fimages%2FEtatCivil%2Fjpeg%2F4e184001&cote=4%20E%20184%2F1"],
-            ["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
-            ["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
+            #["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
+            #["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
             #["tarn", "http://archivesenligne.tarn.fr/affichage.php?image=/archives/4E/EC000448/4E08600606/810860013.jpg"]
             ]
 
