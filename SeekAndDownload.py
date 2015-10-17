@@ -190,12 +190,13 @@ class SeekAndDownload :
         return self.get_image_url_from_arko(o, url, path, description, 'AD43', "http://www.archives43.fr/arkotheque/licence_clic_accepter.php")
 
     #----------------------------------------------
-    # Data retrieval for AD48 : http://archives.lozere.fr
+    # Data retrieval for AD48 : http://archives.lozere.fr/archive/recherche/etatcivil/n:88
     #----------------------------------------------
     def get_image_url_from_AD48(self, o, path, description):
-        return self.get_image_url_from_ligeo(o, path, description, "AD48", "http://archives.lozere.fr",
-                                             "/home/httpd/ad48/ligeo/app/webroot/data/files/ad48.ligeo/cache/images", 3, 6,
-                                             4)
+        #return self.get_image_url_from_ligeo(o, path, description, "AD48", "http://archives.lozere.fr",
+        #                                     "/home/httpd/ad48/ligeo/app/webroot/data/files/ad48.ligeo/cache/images", 3, 6,
+        #                                     4)
+        return "AD48 no more supported"
 
 
     #----------------------------------------------
@@ -360,16 +361,17 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     folder = "/tmp"
 
-    urls = [["aube", "http://www.archives-aube.fr/ark:/42751/s00556835d4834b6/556835d4969d0"], 
+    urls = [#["aube", "http://www.archives-aube.fr/ark:/42751/s00556835d4834b6/556835d4969d0"], 
             #["aveyron", "http://archives.aveyron.fr/archive/permalink?image=FRAD012_EC_000184_4E025977_005&dir=%2Fhome%2Fhttpd%2Fad12%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad12.ligeo%2Fimages%2FFRAD012_EC%2FFRAD012_EC_000184%2FFRAD012_EC_000184_4E025977&cote=4E157-31"],
             #["basrhin", "http://etat-civil.bas-rhin.fr/adeloch/cg67_img_load.php?arko=YTo0OntzOjQ6InJlZjEiO2k6NDM3NDtzOjQ6InJlZjIiO2k6OTtzOjQ6InJlZjMiO3M6NzI6Ii9kYXRhL251bWVyaXNhdGlvbi9BRDY3X0VDX1JFVl8wMDAwLzRfRV8wMDlfMDA3L0FENjdfRUNfMDA5MDI2MDAwMDAxLkpQRyI7czo4OiJyZWZfc2VzcyI7czozMjoiOGFlYTMyOTM3ZmM3MjdhMDE5NjYwYzRhNjIxMjcwNTAiO30=&oh=1"],
             #["deuxsevres", "http://www.archinoe.fr/gramps?id=790002444&p=100"],
             #["hauteloire", "http://www.archives43.fr/arkotheque/visionneuse/print_view.php?width=1124&height=717&top=0&left=-229.671875&tw=1584&th=727&bri=0&cont=0&inv=0&rot=F&imgSrc=http%3A%2F%2Fwww.archives43.fr%2Farkotheque%2Fvisionneuse%2Fimg_prot.php%3Fi%3D31.jpg&tit=Le%20Puy-en-Velay%201881%201881%20&cot=6%20E%20178%2F238%20&ref=ark|3|2640|2640|30"],
-            ["hauteloire", "http://www.archives43.fr/ark:/47539/s005396cd5d60165/5396cdb91d0dc"], 
+            #["hauteloire", "http://www.archives43.fr/ark:/47539/s005396cd5d60165/5396cdb91d0dc"], 
             #["hauteloireold", "http://www.archives43.fr/arkotheque/arkotheque_print_archives.php?arko_args=a:2:{s:10:%22zoomdepart%22;d:43.8712493180578;s:10:%22img_ref_id%22;s:19:%22ark|3|3794|3794|464%22;}"],
             #["lozere", "http://archives.lozere.fr/archive/permalink?image=e0000383&dir=%2Fhome%2Fhttpd%2Fad48%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad48.ligeo%2Fimages%2FEtatCivil%2Fjpeg%2F4e184001&cote=4%20E%20184%2F1"],
+            #["lozere", "http://archives.lozere.fr/ark:/24967/vta54d8f60262f63/daogrp/0/layout:table/idsearch:RECH_d4cdafe331afb5bbe0db09e08cb7607e#id:534026049"],
             #["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
-            #["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
+            ["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
             #["tarn", "http://archivesenligne.tarn.fr/affichage.php?image=/archives/4E/EC000448/4E08600606/810860013.jpg"]
             ]
 
