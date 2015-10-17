@@ -116,6 +116,12 @@ class SeekAndDownload :
     # Data retrieval for AD10 : http://www.archives-aube.fr/arkotheque/etat_civil/index.php
     #----------------------------------------------
     def get_image_url_from_AD10(self, o, url, path, description):
+    	return self.get_image_url_from_arko(o, url, path, description, 'AD10')
+
+
+    # Data retrieval for AD10 : http://www.archives-aube.fr/arkotheque/etat_civil/index.php
+    #----------------------------------------------
+    def get_image_url_from_arko(self, o, url, path, description, source, licence=None):
         if o.path.find("/ark:") == 0:
         	# 1. Download the page containing the links
         	# 2. Decode the base64 ark link to determine the correct page
@@ -125,9 +131,25 @@ class SeekAndDownload :
             cj = cookielib.CookieJar()
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
             content = opener.open(url).read()
+            LOG.debug("arko: " + content)
+            licence_start = content.find('licence_clic_cartouche')
+            if licence != None:
+            	licence_url_start = content.find('data-redirect=',licence_start) + 15
+            	licence_url_end = content.find("'",licence_url_start)
+            	licence_url = content[licence_url_start:licence_url_end]
+            	LOG.info("arko: licence accepted : " + licence_url)
+            	licence_id_start = content.find('data-licence=',licence_start) + 14
+            	licence_id_end = content.find("'",licence_id_start)
+            	licence_id = content[licence_id_start:licence_id_end]
+            	LOG.info("arko: licence id : " + licence_id)
+            	opener.open(licence, data="id="+licence_id)
+            	content = opener.open(licence_url).read()
             reallink_debut = content.find('arko: ') + 7
+            LOG.debug("arko: " + str(reallink_debut))
             reallink_fin = content.find('"',reallink_debut)
+            LOG.debug("arko: " + str(reallink_fin))
             arko = content[reallink_debut:reallink_fin]
+            LOG.debug("arko: " + arko)
             arko_decoded = base64.b64decode(arko)
             page_number_start = arko_decoded.find(';i:')+3
             page_number_end = arko_decoded.find(';',page_number_start)
@@ -139,7 +161,7 @@ class SeekAndDownload :
             id_start = content.find("data-cote=",image_link_end) + 11
             id_end = content.find('"',id_start)
             id = content[id_start:id_end] + '_' + page_number
-            image_name = self.generate_filename_and_ensure_not_exists(path, id, None, "AD10", ".jpg", description)
+            image_name = self.generate_filename_and_ensure_not_exists(path, id, None, source, ".jpg", description)
             if (not image_name[1]):
                 content = opener.open(image_link).read()
                 file = open(image_name[0], "wb")
@@ -148,7 +170,7 @@ class SeekAndDownload :
                 return image_name[2], id, "image/jpeg"
 
         else:
-            return "Ce format d'url n'est pas supporte pour AD10"
+            return "Ce format d'url n'est pas supporte pour " + source
 
 
     #----------------------------------------------
@@ -165,52 +187,7 @@ class SeekAndDownload :
     # Data retrieval for AD43 : http://www.archives43.fr/arkotheque/consult_fonds/index.php?ref_fonds=3
     #----------------------------------------------
     def get_image_url_from_AD43(self, o, url, path, description):
-        if o.path.find("/arkotheque/visionneuse/print_view.php") == 0:
-            doc_id_fin = url.rfind('|')
-            doc_id_debut = url[:doc_id_fin].rfind('|') + 1
-            page_number = int(url[doc_id_fin + 1:]) + 1
-            image_name = self.generate_filename_and_ensure_not_exists(path, url[doc_id_debut:doc_id_fin], page_number,
-                                                                      "AD43", ".jpg", description)
-            if (not image_name[1]):
-                self.get_image_from_arko_ad43(url[doc_id_debut:doc_id_fin], str(page_number), image_name[0])
-                return image_name[2], url[doc_id_debut:doc_id_fin] + " P" + str(page_number), "image/jpeg"
-        elif o.path.find("/arkotheque/arkotheque_print_archives.php") == 0:
-            image_name = self.generate_filename_and_ensure_not_exists(path, "", None, "AD43", ".jpg", description)
-            if (not image_name[1]):
-                arko_args = url[url.find("arko_args=") + 10:]
-
-                xml_content = urllib2.urlopen(
-                    "http://www.archives43.fr/arkotheque/xml_print_image.php?arko_args=" + base64.b64encode(
-                        arko_args.replace("%22", '"'))).read()
-                offset_cote_debut = xml_content.find("img_titre=") + 11
-                offset_cote_fin = xml_content.find('"', offset_cote_debut)
-                offset_ref_debut = xml_content.find("img_ref=") + 9
-                offset_ref_fin = xml_content.find('"', offset_ref_debut)
-                ref = xml_content[offset_ref_debut:offset_ref_fin]
-
-                doc_id_fin = ref.rfind('|')
-                doc_id_debut = ref[:doc_id_fin].rfind('|') + 1
-                page_number = int(ref[doc_id_fin + 1:]) + 1
-
-                self.get_image_from_arko_ad43(ref[doc_id_debut:doc_id_fin], str(page_number), image_name[0])
-                return image_name[2], url[offset_cote_debut:offset_cote_fin] + " P" + str(page_number), "image/jpeg"
-        else:
-            return "Ce format d'url n'est pas supporte pour AD43"
-
-
-    def get_image_from_arko_ad43(self, doc_number_str, page_number_str, filename):
-        doc_url = "http://www.archives43.fr/arkotheque/arkotheque_visionneuse_archives.php?arko=" + base64.b64encode(
-            'a:4:{s:4:"date";s:10:"2013-08-17";s:10:"type_fonds";s:11:"arko_seriel";s:4:"ref1";i:3;s:4:"ref2";i:' + doc_number_str + ';}')
-        page_url = "http://www.archives43.fr/arkotheque/visionneuse/ajax_create_img.php?imgSrc=http%3A%2F%2Fwww.archives43.fr%2Farkotheque%2Fvisionneuse%2Fimg_prot.php%3Fi%3D" + page_number_str + ".jpg"
-
-        cj = cookielib.CookieJar()
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-        opener.open(doc_url).read()
-        content = opener.open(page_url).read()
-        file = open(filename, "wb")
-        file.write(content)
-        file.close()
-
+        return self.get_image_url_from_arko(o, url, path, description, 'AD43', "http://www.archives43.fr/arkotheque/licence_clic_accepter.php")
 
     #----------------------------------------------
     # Data retrieval for AD48 : http://archives.lozere.fr
@@ -380,13 +357,15 @@ class SeekAndDownload :
 if __name__ == "__main__":
     import sys
     downloader = SeekAndDownload(sys.argv[1], sys.argv[2])
+    logging.basicConfig(level=logging.DEBUG)
     folder = "/tmp"
 
     urls = [["aube", "http://www.archives-aube.fr/ark:/42751/s00556835d4834b6/556835d4969d0"], 
-            ["aveyron", "http://archives.aveyron.fr/archive/permalink?image=FRAD012_EC_000184_4E025977_005&dir=%2Fhome%2Fhttpd%2Fad12%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad12.ligeo%2Fimages%2FFRAD012_EC%2FFRAD012_EC_000184%2FFRAD012_EC_000184_4E025977&cote=4E157-31"],
-            ["basrhin", "http://etat-civil.bas-rhin.fr/adeloch/cg67_img_load.php?arko=YTo0OntzOjQ6InJlZjEiO2k6NDM3NDtzOjQ6InJlZjIiO2k6OTtzOjQ6InJlZjMiO3M6NzI6Ii9kYXRhL251bWVyaXNhdGlvbi9BRDY3X0VDX1JFVl8wMDAwLzRfRV8wMDlfMDA3L0FENjdfRUNfMDA5MDI2MDAwMDAxLkpQRyI7czo4OiJyZWZfc2VzcyI7czozMjoiOGFlYTMyOTM3ZmM3MjdhMDE5NjYwYzRhNjIxMjcwNTAiO30=&oh=1"],
-            ["deuxsevres", "http://www.archinoe.fr/gramps?id=790002444&p=100"],
-            ["hauteloire", "http://www.archives43.fr/arkotheque/visionneuse/print_view.php?width=1124&height=717&top=0&left=-229.671875&tw=1584&th=727&bri=0&cont=0&inv=0&rot=F&imgSrc=http%3A%2F%2Fwww.archives43.fr%2Farkotheque%2Fvisionneuse%2Fimg_prot.php%3Fi%3D31.jpg&tit=Le%20Puy-en-Velay%201881%201881%20&cot=6%20E%20178%2F238%20&ref=ark|3|2640|2640|30"],
+            #["aveyron", "http://archives.aveyron.fr/archive/permalink?image=FRAD012_EC_000184_4E025977_005&dir=%2Fhome%2Fhttpd%2Fad12%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad12.ligeo%2Fimages%2FFRAD012_EC%2FFRAD012_EC_000184%2FFRAD012_EC_000184_4E025977&cote=4E157-31"],
+            #["basrhin", "http://etat-civil.bas-rhin.fr/adeloch/cg67_img_load.php?arko=YTo0OntzOjQ6InJlZjEiO2k6NDM3NDtzOjQ6InJlZjIiO2k6OTtzOjQ6InJlZjMiO3M6NzI6Ii9kYXRhL251bWVyaXNhdGlvbi9BRDY3X0VDX1JFVl8wMDAwLzRfRV8wMDlfMDA3L0FENjdfRUNfMDA5MDI2MDAwMDAxLkpQRyI7czo4OiJyZWZfc2VzcyI7czozMjoiOGFlYTMyOTM3ZmM3MjdhMDE5NjYwYzRhNjIxMjcwNTAiO30=&oh=1"],
+            #["deuxsevres", "http://www.archinoe.fr/gramps?id=790002444&p=100"],
+            #["hauteloire", "http://www.archives43.fr/arkotheque/visionneuse/print_view.php?width=1124&height=717&top=0&left=-229.671875&tw=1584&th=727&bri=0&cont=0&inv=0&rot=F&imgSrc=http%3A%2F%2Fwww.archives43.fr%2Farkotheque%2Fvisionneuse%2Fimg_prot.php%3Fi%3D31.jpg&tit=Le%20Puy-en-Velay%201881%201881%20&cot=6%20E%20178%2F238%20&ref=ark|3|2640|2640|30"],
+            ["hauteloire", "http://www.archives43.fr/ark:/47539/s005396cd5d60165/5396cdb91d0dc"], 
             #["hauteloireold", "http://www.archives43.fr/arkotheque/arkotheque_print_archives.php?arko_args=a:2:{s:10:%22zoomdepart%22;d:43.8712493180578;s:10:%22img_ref_id%22;s:19:%22ark|3|3794|3794|464%22;}"],
             #["lozere", "http://archives.lozere.fr/archive/permalink?image=e0000383&dir=%2Fhome%2Fhttpd%2Fad48%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad48.ligeo%2Fimages%2FEtatCivil%2Fjpeg%2F4e184001&cote=4%20E%20184%2F1"],
             #["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
