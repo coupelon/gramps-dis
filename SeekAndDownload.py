@@ -39,15 +39,11 @@ import logging
 LOG = logging.getLogger(".SeekAndDownload")
 
 class SeekAndDownload :
-    def __init__(self, ad81_login, ad81_password):
-        self.ad81_login = ad81_login
-        self.ad81_password = ad81_password
-
     def determine_cote_from_url(self, url, path, description):
         LOG.debug("Determine if url needs to be retrieved : " + url)
         o = urllib.parse.urlparse(url)
         if o.netloc == "www.archivesdepartementales.puydedome.fr":
-            image_url = self.get_image_url_from_AD63(o, path, description)
+            image_url = self.get_image_url_from_AD63(o, url, path, description)
             return image_url
         if o.netloc == "earchives.cg64.fr":
             image_url = self.get_image_url_from_AD64(o, path, description)
@@ -76,13 +72,7 @@ class SeekAndDownload :
         print
         "Not retrieved :" + url
 
-
-    def get_image_url_from_ligeo(self, o, path, description, caller, base_url, cache_url, max_page_size, m_x, m_y):
-        query_tuple = urllib.parse.parse_qs(o.query, keep_blank_values=True)
-        image_url = base_url + "/visui.php?DIR=" + ''.join(
-            query_tuple["dir"]) + "&CACHE=" + cache_url + "&IMAGE=" + ''.join(query_tuple["image"])  #+ "&SI=img0"
-        image_cote = ''.join(query_tuple["cote"])
-        image_page = int(''.join(query_tuple["image"])[-max_page_size:])
+    def download_images_from_ligeo(self, o, path, description, caller, image_url, image_cote, image_page, m_x, m_y):
         image_name = self.generate_filename_and_ensure_not_exists(path, image_cote, image_page, caller, ".jpg", description)
         if (not image_name[1]):
             image = [[PIL.Image.open(BytesIO(urllib.request.urlopen(
@@ -109,55 +99,57 @@ class SeekAndDownload :
                 size_y = 0
             background.save(image_name[0])
             return image_name[2], image_cote + " P" + str(image_page), "image/jpeg"
-
-        #----------------------------------------------
-
-
+        
+    #----------------------------------------------
     # Data retrieval for AD10 : http://www.archives-aube.fr/arkotheque/etat_civil/index.php
     #----------------------------------------------
     def get_image_url_from_AD10(self, o, url, path, description):
-    	return self.get_image_url_from_arko(o, url, path, description, 'AD10')
+        return self.get_image_url_from_arko(o, url, path, description, 'AD10')
 
 
     # Data retrieval for AD10 : http://www.archives-aube.fr/arkotheque/etat_civil/index.php
     #----------------------------------------------
     def get_image_url_from_arko(self, o, url, path, description, source, licence=None):
         if o.path.find("/ark:") == 0:
-        	# 1. Download the page containing the links
-        	# 2. Decode the base64 ark link to determine the correct page
-        	# 3. Parse the page's source to determine the jpg's url
-        	# 4. Parse the page's source to determine the jpg's identifier
-        	# 5. Download the jpg
+            # 1. Download the page containing the links
+            # 2. Decode the base64 ark link to determine the correct page
+            # 3. Parse the page's source to determine the jpg's url
+            # 4. Parse the page's source to determine the jpg's identifier
+            # 5. Download the jpg
             cj = http.cookiejar.CookieJar()
             opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
             content = opener.open(url).read()
-            LOG.debug(b"arko: " + content)
             licence_start = content.find(b'licence_clic_cartouche')
             if licence != None:
-            	licence_url_start = content.find(b'data-redirect=',licence_start) + 15
-            	licence_url_end = content.find(b"'",licence_url_start)
-            	licence_url = content[licence_url_start:licence_url_end].decode("utf-8")
-            	LOG.info("arko: licence accepted : " + licence_url)
-            	licence_id_start = content.find(b'data-licence=',licence_start) + 14
-            	licence_id_end = content.find(b"'",licence_id_start)
-            	licence_id = content[licence_id_start:licence_id_end]
-            	LOG.info(b"arko: licence id : " + licence_id)
-            	opener.open(licence, data=b"id="+licence_id)
-            	content = opener.open(licence_url).read()
+                licence_url_start = content.find(b'data-redirect=',licence_start) + 15
+                licence_url_end = content.find(b"'",licence_url_start)
+                licence_url = content[licence_url_start:licence_url_end].decode("utf-8")
+                LOG.info("arko: licence accepted : " + licence_url)
+                licence_id_start = content.find(b'data-licence=',licence_start) + 14
+                licence_id_end = content.find(b"'",licence_id_start)
+                licence_id = content[licence_id_start:licence_id_end]
+                LOG.info(b"arko: licence id : " + licence_id)
+                opener.open(licence, data=b"id="+licence_id)
+                content = opener.open(licence_url).read()
+            LOG.debug(b"arko content: " + content)
             reallink_debut = content.find(b'arko: ') + 7
-            LOG.debug("arko: " + str(reallink_debut))
             reallink_fin = content.find(b'"',reallink_debut)
-            LOG.debug("arko: " + str(reallink_fin))
             arko = content[reallink_debut:reallink_fin]
-            LOG.debug(b"arko: " + arko)
+            LOG.debug(b"arko: real_link: " + arko)
             arko_decoded = base64.b64decode(arko).decode("utf-8")
+            LOG.debug("arko_decoded: " + arko_decoded)
             page_number_start = arko_decoded.find(';i:')+3
             page_number_end = arko_decoded.find(';',page_number_start)
             page_number = str.encode(arko_decoded[page_number_start:page_number_end])
+            LOG.debug(b"arko: page_number: " + page_number)
             image_link_start = content.find(b'>' + page_number + b'</span>')
-            image_link_start = content.find(b'rel="', image_link_start) + 5
+            if image_link_start > 0:
+                image_link_start = content.find(b'rel="', image_link_start) + 5
+            else:
+                image_link_start = content.find(b'thumb_active" rel="') + 19
             image_link_end = content.find(b'"',image_link_start)
             image_link = content[image_link_start:image_link_end].decode("utf-8")
+            LOG.debug("arko: image_link: " + image_link)
             id_start = content.find(b"data-cote=",image_link_end) + 11
             id_end = content.find(b'"',id_start)
             id = (content[id_start:id_end] + b'_' + page_number).decode("utf-8", errors='ignore')
@@ -202,11 +194,33 @@ class SeekAndDownload :
     #----------------------------------------------
     # Data retrieval for AD63 : http://www.archivesdepartementales.puydedome.fr/archives/recherche/etatcivil/n:13
     #----------------------------------------------
-    def get_image_url_from_AD63(self, o, path, description):
-        return self.get_image_url_from_ligeo(o, path, description, "AD63",
-                                             "http://www.archivesdepartementales.puydedome.fr",
-                                             "/home/httpd/ad63/portail/app/webroot/data/files//ad63.portail/cache/images",
-                                             4, 5, 4)
+    def get_image_url_from_AD63(self, o, url, path, description):
+        if o.path.find("/ark:") == 0:
+            content = urllib.request.urlopen(urllib.request.Request(url, None, {'User-Agent': 'Mozilla/5.0'})).read()
+            xmlinfo_debut = content.find(b"xmlFile") + 12
+            xmlinfo_fin = content.find(b'"', xmlinfo_debut)
+            LOG.debug(b"xmlFile: " + content[xmlinfo_debut:xmlinfo_fin])
+            content = urllib.request.urlopen(urllib.request.Request(content[xmlinfo_debut:xmlinfo_fin].decode("utf-8"), None, {'User-Agent': 'Mozilla/5.0'})).read()
+            dir_debut = content.find(b"<dir>") + 5
+            dir_end = content.find(b"<",dir_debut)
+            dir_name = content[dir_debut:dir_end].decode("utf-8")
+            LOG.debug("dir: " + dir_name)
+            image_index_end = content.find(str.encode(url))
+            image_index_start = content.rfind(b'<name>',0,image_index_end) + 6
+            image_index_end =  content.find(b"<",image_index_start)
+            image_cote = content[image_index_start:image_index_end].decode("utf-8")
+            LOG.debug("image: " + image_cote)
+            image_page_start = url.rfind('/') + 1
+            image_page = int(url[image_page_start:])
+            image_url = "http://www.archivesdepartementales.puydedome.fr/visui.php?DIR=" + dir_name + "&CACHE=/home/httpd/ad63/portail/app/webroot/data/files//ad63.portail/cache/images&IMAGE=" + image_cote
+            return self.download_images_from_ligeo(o, path, description, "AD63", image_url, image_cote, image_page, 5, 4)
+
+        query_tuple = urllib.parse.parse_qs(o.query, keep_blank_values=True)
+        image_url = "http://www.archivesdepartementales.puydedome.fr" + "/visui.php?DIR=" + ''.join(
+            query_tuple["dir"]) + "&CACHE=" + "/home/httpd/ad63/portail/app/webroot/data/files//ad63.portail/cache/images" + "&IMAGE=" + ''.join(query_tuple["image"])  #+ "&SI=img0"
+        image_cote = ''.join(query_tuple["cote"])
+        image_page = int(''.join(query_tuple["image"])[-4:])
+        return self.download_images_from_ligeo(o, path, description, "AD63", image_url, image_cote, image_page, 5, 4)
 
 
     #----------------------------------------------
@@ -294,8 +308,6 @@ class SeekAndDownload :
     # Data retrieval for AD81 : http://archives.tarn.fr/
     #----------------------------------------------
     def get_image_url_from_AD81(self, o, path, description):
-        ad81_login = self.ad81_login
-        ad81_password = self.ad81_password
         if o.path.find("/affichage.php") == 0:
             query_tuple = urllib.parse.parse_qs(o.query, keep_blank_values=True)
             try:
@@ -352,22 +364,24 @@ class SeekAndDownload :
 
 if __name__ == "__main__":
     import sys
-    downloader = SeekAndDownload(sys.argv[1], sys.argv[2])
+    downloader = SeekAndDownload()
     logging.basicConfig(level=logging.DEBUG)
     folder = "/tmp"
 
-    urls = [["aube", "http://www.archives-aube.fr/ark:/42751/s00556835d4834b6/556835d4969d0"], 
+    urls = [#["aube", "http://www.archives-aube.fr/ark:/42751/s00556835d4834b6/556835d4969d0"], 
             #["aveyron", "http://archives.aveyron.fr/archive/permalink?image=FRAD012_EC_000184_4E025977_005&dir=%2Fhome%2Fhttpd%2Fad12%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad12.ligeo%2Fimages%2FFRAD012_EC%2FFRAD012_EC_000184%2FFRAD012_EC_000184_4E025977&cote=4E157-31"],
-            ["basrhin", "http://etat-civil.bas-rhin.fr/adeloch/cg67_img_load.php?arko=YTo0OntzOjQ6InJlZjEiO2k6NDM3NDtzOjQ6InJlZjIiO2k6OTtzOjQ6InJlZjMiO3M6NzI6Ii9kYXRhL251bWVyaXNhdGlvbi9BRDY3X0VDX1JFVl8wMDAwLzRfRV8wMDlfMDA3L0FENjdfRUNfMDA5MDI2MDAwMDAxLkpQRyI7czo4OiJyZWZfc2VzcyI7czozMjoiOGFlYTMyOTM3ZmM3MjdhMDE5NjYwYzRhNjIxMjcwNTAiO30=&oh=1"],
-            ["deuxsevres", "http://www.archinoe.fr/gramps?id=790002444&p=100"],
+            #["basrhin", "http://etat-civil.bas-rhin.fr/adeloch/cg67_img_load.php?arko=YTo0OntzOjQ6InJlZjEiO2k6NDM3NDtzOjQ6InJlZjIiO2k6OTtzOjQ6InJlZjMiO3M6NzI6Ii9kYXRhL251bWVyaXNhdGlvbi9BRDY3X0VDX1JFVl8wMDAwLzRfRV8wMDlfMDA3L0FENjdfRUNfMDA5MDI2MDAwMDAxLkpQRyI7czo4OiJyZWZfc2VzcyI7czozMjoiOGFlYTMyOTM3ZmM3MjdhMDE5NjYwYzRhNjIxMjcwNTAiO30=&oh=1"],
+            #["deuxsevres", "http://www.archinoe.fr/gramps?id=790002444&p=100"],
             #["hauteloire", "http://www.archives43.fr/arkotheque/visionneuse/print_view.php?width=1124&height=717&top=0&left=-229.671875&tw=1584&th=727&bri=0&cont=0&inv=0&rot=F&imgSrc=http%3A%2F%2Fwww.archives43.fr%2Farkotheque%2Fvisionneuse%2Fimg_prot.php%3Fi%3D31.jpg&tit=Le%20Puy-en-Velay%201881%201881%20&cot=6%20E%20178%2F238%20&ref=ark|3|2640|2640|30"],
-            ["hauteloire", "http://www.archives43.fr/ark:/47539/s005396cd5d60165/5396cdb91d0dc"], 
+            #["hauteloire", "http://www.archives43.fr/ark:/47539/s005396cd5d60165/5396cdb91d0dc"], 
             #["hauteloireold", "http://www.archives43.fr/arkotheque/arkotheque_print_archives.php?arko_args=a:2:{s:10:%22zoomdepart%22;d:43.8712493180578;s:10:%22img_ref_id%22;s:19:%22ark|3|3794|3794|464%22;}"],
             #["lozere", "http://archives.lozere.fr/archive/permalink?image=e0000383&dir=%2Fhome%2Fhttpd%2Fad48%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad48.ligeo%2Fimages%2FEtatCivil%2Fjpeg%2F4e184001&cote=4%20E%20184%2F1"],
-            ["lozere", "http://archives.lozere.fr/ark:/24967/vta54d8f60262f63/daogrp/0/layout:table/idsearch:RECH_d4cdafe331afb5bbe0db09e08cb7607e#id:534026049"],
+            #["lozere", "http://archives.lozere.fr/ark:/24967/vta54d8f60262f63/daogrp/0/layout:table/idsearch:RECH_d4cdafe331afb5bbe0db09e08cb7607e#id:534026049"],
             ["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
-            ["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
-            ["tarn", "http://archivesenligne.tarn.fr/affichage.php?image=/archives/4E/EC000448/4E08600606/810860013.jpg"]
+            #["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
+            #["hl1","http://www.archives43.fr/ark:/47539/s0053902639b9754/53902663994f1"],
+            ["pd1","http://www.archivesdepartementales.puydedome.fr/ark:/72847/vta54624d9839777/daogrp/0/43"]
+            #["tarn", "http://archivesenligne.tarn.fr/affichage.php?image=/archives/4E/EC000448/4E08600606/810860013.jpg"]
             ]
 
     for url in urls:

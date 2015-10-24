@@ -90,16 +90,6 @@ class DownloadOptions(MenuToolOptions):
   
         self.__update_filters()
         
-        ad81_login = StringOption(_("AD81 Login"), "")
-        ad81_login.set_help(_("Login pour le site http://archives.tarn.fr/"))
-        menu.add_option(category_name, "ad81_login", ad81_login)
-        self.__ad81_login = ad81_login
-        
-        ad81_password = StringOption(_("AD81 Password"), "")
-        ad81_password.set_help(_("Mot de passe pour le site http://archives.tarn.fr/"))
-        menu.add_option(category_name, "ad81_password", ad81_password)
-        self.__ad81_password = ad81_password
-        
     def __update_filters(self):
         """
         Update the filter list based on the selected person
@@ -171,8 +161,7 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                         path = media_directory + os.sep + dir_name
                     else:
                         path = const.USER_HOME + os.sep + dir_name
-                    result = SeekAndDownload.SeekAndDownload(self.options.handler.options_dict['ad81_login'],
-                                             self.options.handler.options_dict['ad81_password'])\
+                    result = SeekAndDownload.SeekAndDownload()\
                         .determine_cote_from_url(url.get_path(), path, url.get_description())
                     if result != None and len(result) == 3:
                         # 0: relative_path, 1: title, 2: type
