@@ -48,6 +48,9 @@ class SeekAndDownload :
         if o.netloc == "earchives.cg64.fr":
             image_url = self.get_image_url_from_AD64(o, path, description)
             return image_url
+        if o.netloc == "earchives.le64.fr":
+            image_url = self.get_image_url_from_AD64_2(o, path, description)
+            return image_url
         if o.netloc == "etat-civil.bas-rhin.fr":
             image_url = self.get_image_url_from_AD67(o, path, description)
             return image_url
@@ -238,6 +241,20 @@ class SeekAndDownload :
             file.close()
             return image_name[2], id, "image/jpeg"
 
+    #----------------------------------------------
+    # Data retrieval for AD64 : http://earchives.cg64.fr/etat-civil-search-form.html
+    #----------------------------------------------
+    def get_image_url_from_AD64_2(self, o, path, description):
+        offset_fin_id = o.path.find(".jpg")
+        offset_debut_id = o.path[:offset_fin_id].rfind("/")
+        id = o.path[offset_debut_id:offset_fin_id].replace("_", " ")
+        image_name = self.generate_filename_and_ensure_not_exists(path, id, None, "AD64", ".jpg", description)
+        if (not image_name[1]):
+            content = urllib.request.urlopen(o.geturl().replace("__thumbs__/default/",'').replace("le64.fr","cg64.fr")).read()
+            file = open(image_name[0], "wb")
+            file.write(content)
+            file.close()
+            return image_name[2], id, "image/jpeg"
 
     #----------------------------------------------
     # Data retrieval for AD67 : http://etat-civil.bas-rhin.fr/
@@ -377,10 +394,11 @@ if __name__ == "__main__":
             #["hauteloireold", "http://www.archives43.fr/arkotheque/arkotheque_print_archives.php?arko_args=a:2:{s:10:%22zoomdepart%22;d:43.8712493180578;s:10:%22img_ref_id%22;s:19:%22ark|3|3794|3794|464%22;}"],
             #["lozere", "http://archives.lozere.fr/archive/permalink?image=e0000383&dir=%2Fhome%2Fhttpd%2Fad48%2Fligeo%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2Fad48.ligeo%2Fimages%2FEtatCivil%2Fjpeg%2F4e184001&cote=4%20E%20184%2F1"],
             #["lozere", "http://archives.lozere.fr/ark:/24967/vta54d8f60262f63/daogrp/0/layout:table/idsearch:RECH_d4cdafe331afb5bbe0db09e08cb7607e#id:534026049"],
-            ["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
-            #["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
+            #["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
+            ["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
+            ["pyreneeatlantique2", "http://earchives.le64.fr/img-server/__thumbs__/default/FRAD064003_IR0002/LARUNS_1/5MI320-3/FRAD064012_5MI320_3_0696.jpg?r=0"],
             #["hl1","http://www.archives43.fr/ark:/47539/s0053902639b9754/53902663994f1"],
-            ["pd1","http://www.archivesdepartementales.puydedome.fr/ark:/72847/vta54624d9839777/daogrp/0/43"]
+            #["pd1","http://www.archivesdepartementales.puydedome.fr/ark:/72847/vta54624d9839777/daogrp/0/43"]
             #["tarn", "http://archivesenligne.tarn.fr/affichage.php?image=/archives/4E/EC000448/4E08600606/810860013.jpg"]
             ]
 
