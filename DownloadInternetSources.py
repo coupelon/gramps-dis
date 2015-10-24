@@ -51,6 +51,7 @@ import gramps.gen.const
 from gramps.gen.utils.grampslocale import GrampsLocale
 _ = GrampsLocale().translation.gettext
 import logging
+import os
 LOG = logging.getLogger(".DownloadInternetSources")
   
 #------------------------------------------------------------------------
@@ -131,7 +132,7 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
     def run(self):
         self.skeys = {} 
         
-    	LOG.info("Browsing page sources")
+        LOG.info("Browsing page sources")
 
         with DbTxn(_("Download Internet Sources"), self.db, batch=True) as self.trans:
             self.add_results_frame(_("Results"))
@@ -170,7 +171,7 @@ class DownloadWindow(PluginWindows.ToolManagedWindowBatch):
                         path = media_directory + os.sep + dir_name
                     else:
                         path = const.USER_HOME + os.sep + dir_name
-                    result = SeekAndDownload(self.options.handler.options_dict['ad81_login'],
+                    result = SeekAndDownload.SeekAndDownload(self.options.handler.options_dict['ad81_login'],
                                              self.options.handler.options_dict['ad81_password'])\
                         .determine_cote_from_url(url.get_path(), path, url.get_description())
                     if result != None and len(result) == 3:
