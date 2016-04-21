@@ -54,6 +54,9 @@ class SeekAndDownload :
         if o.netloc == "etat-civil.bas-rhin.fr":
             image_url = self.get_image_url_from_AD67(o, path, description)
             return image_url
+        if o.netloc == "population.bas-rhin.fr":
+            image_url = self.get_image_url_from_AD67(o, path, description)
+            return image_url
         if o.netloc == "archives.aveyron.fr":
             image_url = self.get_image_url_from_AD12(o, path, description)
             return image_url
@@ -65,6 +68,9 @@ class SeekAndDownload :
             return image_url
         if o.netloc == "www.archives-aube.fr":
             image_url = self.get_image_url_from_AD10(o, url, path, description)
+            return image_url
+        if o.netloc == "archives.cantal.fr":
+            image_url = self.get_image_url_from_AD15(o, url, path, description)
             return image_url
         if o.netloc == "archivesenligne.landes.org":
             image_url = self.get_image_url_from_Landes(o, url, path, description)
@@ -78,11 +84,11 @@ class SeekAndDownload :
         print
         "Not retrieved :" + url
 
-    def download_images_from_ligeo(self, o, path, description, caller, image_url, image_cote, image_page, m_x, m_y):
+    def download_images_from_ligeo(self, o, path, description, caller, image_url, image_cote, image_page, m_x, m_y, mid_text='&SI=0/img_0', end_text=''):
         image_name = self.generate_filename_and_ensure_not_exists(path, image_cote, image_page, caller, ".jpg", description)
         if (not image_name[1]):
             image = [[PIL.Image.open(BytesIO(urllib.request.urlopen(
-                urllib.request.Request(image_url + "&SI=0/img_0" + str(k) + "_0" + str(m), None,
+                urllib.request.Request(image_url + mid_text + str(k) + "_0" + str(m) + end_text, None,
                                 {'User-Agent': 'Mozilla/5.0'})).read())) for m in range(0, m_y)] for k in range(0, m_x)]
             size_y = 0;
             size_x = 0;
@@ -105,12 +111,47 @@ class SeekAndDownload :
                 size_y = 0
             background.save(image_name[0])
             return image_name[2], image_cote + " P" + str(image_page), "image/jpeg"
+
+    def download_images_from_cantal(self, o, path, description, caller, image_url, image_cote, image_page, m_x, m_y):
+        image_name = self.generate_filename_and_ensure_not_exists(path, image_cote, image_page, caller, ".jpg", description)
+        if (not image_name[1]):
+            image = [PIL.Image.open(BytesIO(urllib.request.urlopen(
+                urllib.request.Request(image_url + "3_" + str(k) + ".jpg", None,
+                                {'User-Agent': 'Mozilla/5.0'})).read())) for k in range(0, m_x * m_y)]
+            size_y = 0;
+            size_x = 0;
+            for k in range(0, m_x):
+                img_w, img_h = image[k].size
+                size_y += img_w
+            for m in range(0, m_y):
+                img_w, img_h = image[m*m_x].size
+                size_x += img_h
+            background = PIL.Image.new('RGBA', (size_y, size_x), (255, 255, 255, 255))
+            size_y = 0;
+            size_x = 0;
+            img_h = 0
+            for k in range(0, m_x):
+                for m in range(0, m_y):
+                    LOG.debug("Offset: " + str(k + m*m_x) + " with " + str(k) + " & " + str(m))
+                    img_w, img_h = image[k + m*m_x].size
+                    background.paste(image[k + m*m_x], (size_x, size_y))
+                    size_y += img_h
+                size_x += img_w
+                size_y = 0
+            background.save(image_name[0])
+            return image_name[2], image_cote + " P" + str(image_page), "image/jpeg"
         
     #----------------------------------------------
     # Data retrieval for AD10 : http://www.archives-aube.fr/arkotheque/etat_civil/index.php
     #----------------------------------------------
     def get_image_url_from_AD10(self, o, url, path, description):
         return self.get_image_url_from_arko(o, url, path, description, 'AD10')
+
+    #----------------------------------------------
+    # Data retrieval for AD15 : http://archives.cantal.fr/?id=recherche_guidee_etat_civil
+    #----------------------------------------------
+    def get_image_url_from_AD15(self, o, url, path, description):
+        return self.get_image_url_from_arko_cantal(o, url, path, description, 'AD15')
 
     #----------------------------------------------
     def get_image_url_from_arko(self, o, url, path, description, source, licence=None):
@@ -168,6 +209,48 @@ class SeekAndDownload :
         else:
             return "Ce format d'url n'est pas supporte pour " + source
 
+
+#----------------------------------------------
+    def get_image_url_from_arko_cantal(self, o, url, path, description, source):
+        if o.path.find("/ark:") == 0:
+            # 1. Download the page containing the links
+            # 2. Decode the base64 ark link to determine the correct page
+            # 3. Parse the page's source to determine the jpg's url
+            # 4. Parse the page's source to determine the jpg's identifier
+            # 5. Download the jpg
+            cj = http.cookiejar.CookieJar()
+            opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+            content = opener.open(url).read()
+            LOG.debug(b"arko content: " + content)
+            reallink_debut = content.find(b'playlist=') + 9
+            reallink_fin = content.find(b'&',reallink_debut)
+            arko = content[reallink_debut:reallink_fin]
+            LOG.debug(b"arko: real_link: " + arko)
+
+            page_debut = content.find(b'cur_item=') + 9
+            page_fin = content.find(b'&',page_debut)
+            page_number = content[page_debut:page_fin]            
+            LOG.debug(b"arko: page_number: " + page_number)
+
+            content = opener.open("http://archives.cantal.fr" + arko.decode("utf-8")).read()
+
+            link_debut = content.find(b'<i><a>')
+            for i in range (0,int(page_number)):
+            	link_debut = content.find(b'<i><a>',link_debut + 1)
+
+            link_debut += 6
+            link_fin = content.find(b'</',link_debut)
+            image_link = content[link_debut:link_fin].decode("utf-8")
+            LOG.debug("arko: image_link: " + image_link)
+
+            image_url = "http://viewer.cg15.mnesys.fr/accounts/mnesys_ad15/datas/medias/" + image_link.replace('.jpg','_jpg_/')
+
+            LOG.debug("image: " + image_url)
+
+            return self.download_images_from_cantal(o, path, description, "AD15", image_url, image_link, page_number, 9, 6)
+
+        else:
+            return "Ce format d'url n'est pas supporte pour " + source
 
     #----------------------------------------------
     # Data retrieval for AD12 : http://archives.aveyron.fr/archive/recherche/etatcivil/n:22
@@ -269,7 +352,7 @@ class SeekAndDownload :
     # Data retrieval for AD67 : http://etat-civil.bas-rhin.fr/
     #----------------------------------------------
     def get_image_url_from_AD67(self, o, path, description):
-        if o.path.find("/adeloch/cg67_img_load.php") == 0:
+        if (o.path.find("/adeloch/cg67_img_load.php") == 0) or (o.path.find("/ellenbach/cg67_img_load.php") == 0):
             query_tuple = urllib.parse.parse_qs(o.query, keep_blank_values=True)
             decoded = base64.b64decode(''.join(query_tuple["arko"])).decode("utf-8")
 
@@ -406,7 +489,9 @@ if __name__ == "__main__":
             #["puydedome", "http://www.archivesdepartementales.puydedome.fr/archives/permalink?image=FRAD063_6E456_00010_0053&dir=%2Fhome%2Fhttpd%2Fad63%2Fportail%2Fapp%2F%2Fwebroot%2Fdata%2Ffiles%2F%2Fad63.portail%2Fimages%2FFRAD063_000050001_6%2FFRAD063_6E456%2FFRAD063_6E456_00010&cote=6%20E%20456%2F10"],
             #["pyreneeatlantique", "http://earchives.cg64.fr/img-server/FRAD064003_IR0002/LARUNS_1/5MI320-2/FRAD064012_5MI320_2_0218.jpg"],
             #["pyreneeatlantique2", "http://earchives.le64.fr/img-server/__thumbs__/default/FRAD064003_IR0002/LARUNS_1/5MI320-3/FRAD064012_5MI320_3_0696.jpg?r=0"],
-            ["landes", "http://archivesenligne.landes.org/ark:/35227/s0052cbf440be0db/52cbfefbb91af"],
+            #["landes", "http://archivesenligne.landes.org/ark:/35227/s0052cbf440be0db/52)cbfefbb91af"],
+            #["cantal", "http://archives.cantal.fr/ark:/16075/a011324371641ExFPpC/1/39"],
+            ["bas-rhin", "http://population.bas-rhin.fr/ellenbach/cg67_img_load.php?arko=YTo0OntzOjQ6InJlZjEiO2k6MTU4MztzOjQ6InJlZjIiO2k6MTMwO3M6NDoicmVmMyI7czo3NjoiL2RhdGEvbnVtZXJpc2F0aW9uL0FENjdfTE5fRERfMjAxMy9BRDY3X0xOXzEzMDAwMDkwL0FENjdfTE5fMTMwMDAwOTAwNDIzLkpQRyI7czo4OiJyZWZfc2VzcyI7czozMjoiNDRmYzJjNDQ0OWMzNzg1NGI4MjY3NjVlM2I0NzVmMmMiO30=&oh=1"],
             #["hl1","http://www.archives43.fr/ark:/47539/s0053902639b9754/53902663994f1"],
             #["pd1","http://www.archivesdepartementales.puydedome.fr/ark:/72847/vta54624d9839777/daogrp/0/43"]
             #["tarn", "http://archivesenligne.tarn.fr/affichage.php?image=/archives/4E/EC000448/4E08600606/810860013.jpg"]
